@@ -2,9 +2,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:crafty_bay_ecommerce/app/app_colors.dart';
 import 'package:crafty_bay_ecommerce/app/assets_path.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/current_slide_indicator_controller.dart';
-import 'package:crafty_bay_ecommerce/features/products/controller/prodct_quantity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../widgets/product_name_and_quantity_section.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({super.key});
@@ -18,8 +19,10 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   final CurrentSlideIndicatorController currentSlideIndicatorController =
       Get.find<CurrentSlideIndicatorController>();
+  final  CarouselController carouselController = CarouselController();
 
-  List productImages = [1, 2, 3, 4, 5, 6];
+  List productImages = [1, 2, 3, 4, 5,];
+  List<Color> productColor = [Colors.black, AppColors.themColor, Color(0xff221122), Colors.black12, Colors.grey, ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +35,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               const SizedBox(height: 10),
               ProductNameAndQuantitySection(),
               const SizedBox(height: 5),
-              Row(children: [
-
-              ],)
+              buildReviewSection(),
+              const SizedBox(height: 5),
+              buildColorSection()
             ],
           ),
         ),
@@ -42,12 +45,63 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Container buildProductImageSection(BuildContext context) {
+  Widget buildColorSection(){
+    return Padding(
+      padding: const EdgeInsets.only(left: 5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Color'),
+          GestureDetector(
+            onTap: (){},
+            child: Row(
+              children: productColor.asMap().entries.map((entry){
+                int index = entry.key;
+                Color i = entry.value;
+                return Container(
+                  margin: EdgeInsets.only(right: 10),
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: i,
+                  ),
+                );
+              }).toList()
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildReviewSection() {
+    return Row(
+              children: [
+                const SizedBox(width: 5,),
+                Icon(Icons.star, color: Colors.amber,size: 20,),
+                const SizedBox(width: 5,),
+                Text('4.8',style: TextStyle(color: Colors.grey,fontSize: 18,fontWeight: FontWeight.w300),),
+                const SizedBox(width: 8,),
+                Text('Reviews',style: TextStyle(color:  AppColors.themColor,fontSize: 18,fontWeight: FontWeight.w500)),
+                const SizedBox(width: 8,),
+                Card(
+                  color: AppColors.themColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Icon(Icons.favorite_outline, color: Colors.white),
+                ),
+              ],
+            );
+  }
+
+  Widget buildProductImageSection(BuildContext context) {
     return Container(
       decoration: BoxDecoration(color: Colors.grey.shade300),
       child: Stack(
         children: [
-          ProductDetailCarousalSlider(productImages: productImages),
+          productDetailCarousalSlider(productImages),
           Row(
             children: [
               IconButton(
@@ -64,102 +118,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ],
           ),
-          BuildSlideIndicator(productImages: productImages),
+          buildSlideIndicator(productImages),
         ],
       ),
     );
   }
 
-  backToHomeScree() {
-    Navigator.pop(context);
-  }
-}
-
-class ProductNameAndQuantitySection extends StatefulWidget {
-  const ProductNameAndQuantitySection({super.key});
-
-  @override
-  State<ProductNameAndQuantitySection> createState() =>
-      _ProductNameAndQuantitySectionState();
-}
-
-class _ProductNameAndQuantitySectionState
-    extends State<ProductNameAndQuantitySection> {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 4,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 5),
-            child: Text(
-              'Happy new year special deal save 30%',
-              style: TextStyle(overflow: TextOverflow.visible),
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: GetBuilder<ProductQuantityController>(
-            builder: (context) {
-              return Row(
-                children: [
-                  IconButton(
-                    onPressed: isDecreasable()?dicreaseQuantity:(){},
-                    icon: Icon(
-                      Icons.indeterminate_check_box,
-                      color: isDecreasable()? AppColors.themColor:AppColors.themColor.shade200
-                    ),
-                  ),
-                  Text(
-                    '${ProductQuantityController.Controller.quantity}',
-                  ),
-                  IconButton(
-                    onPressed: increaseQuantity,
-                    icon: Icon(Icons.add_box,color: buttonColor(),),
-
-                  ),
-                ],
-              );
-            }
-          ),
-        ),
-      ],
-    );
-  }
-
-  buttonColor() {
-    return AppColors.themColor;
-  }
-
-  increaseQuantity() {
-    ProductQuantityController.Controller.increaseQuantity();
-  }
-
-  dicreaseQuantity() {
-    ProductQuantityController.Controller.dicreaseQuantity();
-  }
-
-  bool isDecreasable(){
-    if(ProductQuantityController.Controller.quantity>1){
-      return true;
-    }else{
-      return false;
-    }
-  }
-}
-
-class ProductDetailCarousalSlider extends StatelessWidget {
-  const ProductDetailCarousalSlider({super.key, required this.productImages});
-
-  final List productImages;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget productDetailCarousalSlider(List productImages) {
     return CarouselSlider(
       items:
-          productImages.map((i) {
+          productImages.asMap().entries.map((i) {
             return Builder(
               builder: (BuildContext context) {
                 return Image.asset(
@@ -180,15 +148,8 @@ class ProductDetailCarousalSlider extends StatelessWidget {
       ),
     );
   }
-}
 
-class BuildSlideIndicator extends StatelessWidget {
-  const BuildSlideIndicator({super.key, required this.productImages});
-
-  final List productImages;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget buildSlideIndicator(List productImages) {
     return Padding(
       padding: const EdgeInsets.only(top: 230),
       child: Row(
@@ -217,5 +178,9 @@ class BuildSlideIndicator extends StatelessWidget {
             }).toList(),
       ),
     );
+  }
+
+  backToHomeScree() {
+    Navigator.pop(context);
   }
 }
