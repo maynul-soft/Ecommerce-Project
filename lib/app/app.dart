@@ -5,7 +5,6 @@ import 'package:crafty_bay_ecommerce/features/auth/ui/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 
-import 'app_colors.dart';
 
 class CraftyBay extends StatefulWidget {
   const CraftyBay({super.key});
@@ -18,6 +17,7 @@ class _CraftyBayState extends State<CraftyBay> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      navigatorKey: navigatorKey,
       initialBinding: ControllerBinder(),
       theme: AppTheme.lightThemeData,
       initialRoute: SplashScreen.name,
@@ -26,3 +26,6 @@ class _CraftyBayState extends State<CraftyBay> {
     );
   }
 }
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+

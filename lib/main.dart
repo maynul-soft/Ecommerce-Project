@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'app/app.dart';
@@ -13,7 +12,6 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-
   // frameWork error
 
   FlutterError.onError = (errorDetails) {
@@ -26,8 +24,5 @@ void main() async{
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
-
-  await dotenv.load();
-
   runApp(CraftyBay());
 }

@@ -1,61 +1,55 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../app/app_colors.dart';
 import '../../controller/prodct_quantity_controller.dart';
 
-class ProductNameAndQuantitySection extends StatefulWidget {
-  const ProductNameAndQuantitySection({super.key});
+class ProductNameAndQuantitySection extends StatelessWidget {
+  final String title;
+  final Color? color;
 
-  @override
-  State<ProductNameAndQuantitySection> createState() =>
-      _ProductNameAndQuantitySectionState();
-}
 
-class _ProductNameAndQuantitySectionState
-    extends State<ProductNameAndQuantitySection> {
+  const ProductNameAndQuantitySection({ super.key, required this.title, this.color});
+
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          flex: 4,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 5),
-            child: Text(
-              'Happy new year special deal save 30%',
-              style: TextStyle(overflow: TextOverflow.visible),
-            ),
+          child: Text(
+            title,
+            style: TextStyle(overflow: TextOverflow.visible, color: color?? Colors.black),
           ),
         ),
-        Expanded(
-          flex: 2,
-          child: GetBuilder<ProductQuantityController>(
-              builder: (context) {
-                return Row(
-                  children: [
-                    IconButton(
-                      onPressed: isDecreasable()?dicreaseQuantity:(){},
-                      icon: Icon(
-                          Icons.indeterminate_check_box,
-                          color: isDecreasable()? AppColors.themColor:AppColors.themColor.shade200
-                      ),
-                    ),
-                    Text(
-                      '${ProductQuantityController.Controller.quantity}',
-                    ),
-                    IconButton(
-                      onPressed: increaseQuantity,
-                      icon: Icon(Icons.add_box,color: buttonColor(),),
-
-                    ),
-                  ],
-                );
-              }
-          ),
+        GetBuilder<ProductQuantityController>(
+            builder: (context) {
+              return increaseDecreaseSection();
+            }
         ),
       ],
     );
+  }
+
+  Widget increaseDecreaseSection() {
+    return Row(
+              children: [
+                IconButton(
+                  onPressed: dicreaseQuantity,
+                  icon: Icon(
+                      Icons.indeterminate_check_box,
+                      color:AppColors.themColor
+                  ),
+                ),
+                Text(
+                  '${ProductQuantityController.Controller.quantity}',
+                ),
+                IconButton(
+                  onPressed: increaseQuantity,
+                  icon: Icon(Icons.add_box,color: buttonColor(),),
+                ),
+              ],
+            );
   }
 
   buttonColor() {
@@ -63,18 +57,12 @@ class _ProductNameAndQuantitySectionState
   }
 
   increaseQuantity() {
+    if(ProductQuantityController.Controller.quantity>19) return;
     ProductQuantityController.Controller.increaseQuantity();
   }
 
   dicreaseQuantity() {
+    if(ProductQuantityController.Controller.quantity<2) return;
     ProductQuantityController.Controller.dicreaseQuantity();
-  }
-
-  bool isDecreasable(){
-    if(ProductQuantityController.Controller.quantity>1){
-      return true;
-    }else{
-      return false;
-    }
   }
 }

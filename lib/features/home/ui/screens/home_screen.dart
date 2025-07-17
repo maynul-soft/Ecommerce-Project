@@ -1,6 +1,9 @@
 import 'package:crafty_bay_ecommerce/app/assets_path.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/main_bottom_nav_controller.dart';
+import 'package:crafty_bay_ecommerce/features/common/loading_widget.dart';
+import 'package:crafty_bay_ecommerce/features/home/controller/home_slider_controller.dart';
 import 'package:crafty_bay_ecommerce/features/home/ui/widgets/home_carousal_slider.dart';
+import 'package:crafty_bay_ecommerce/features/products/controller/product_%20catagory_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,7 +18,6 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   static final String name = '/home';
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -38,7 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 BuildSearchSection(),
                 const SizedBox(height: 20),
-                HomeCarousalSlider(),
+                GetBuilder<HomeSliderController>(
+                  builder: (controller) {
+                    return Visibility(
+                        visible: controller.isLoading == false,
+                        replacement: LoadingWidget.froScreen(),
+                        child: HomeCarousalSlider());
+                  }
+                ),
                 const SizedBox(height: 20),
                 HomeScreenSectionHeader(
                   header: 'All Categories',
@@ -47,7 +56,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 const SizedBox(height: 10),
-                buildCategorySection(),
+                GetBuilder<ProductCategoryController>(
+                  builder: (controller) {
+                    return Visibility(
+                          visible: controller.isLoading == false && controller.isInitialLoading == false,
+                        replacement: LoadingWidget.froScreen(),
+                        child: buildCategorySection());
+                  }
+                ),
                 HomeScreenSectionHeader(header: 'Popular'),
                 const SizedBox(height: 5),
                 getPopularProduct(),
@@ -67,19 +83,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildCategorySection() {
-    return SizedBox(
-      height: 115,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemBuilder: ((BuildContext context, int index) {
-          return GestureDetector(
-            onTap: (){Navigator.pushNamed(context, ProductList.name, arguments: 'Electronics');},
-            child: CategoryCard(icon: Icons.laptop, categoryName: 'Computer'),
-          );
-        }),
-        separatorBuilder: ((_, _) => SizedBox(width: 20)),
-        itemCount: 20,
-      ),
+    return GetBuilder<ProductCategoryController>(
+      builder: (categoryController) {
+        return SizedBox(
+          height: 115,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemBuilder: ((BuildContext context, int index) {
+              var controller = categoryController.categoryList[index];
+              return GestureDetector(
+                onTap: (){
+                  Navigator.pushNamed(context, ProductList.name, arguments: controller.title);
+                  },
+                child: CategoryCard(imageUrl: controller.icon, categoryName: controller.title),
+              );
+            }),
+            separatorBuilder: ((_, _) => SizedBox(width: 20)),
+            itemCount: categoryController.categoryList.length> 10? 10:categoryController.categoryList.length ,
+          ),
+        );
+      }
     );
   }
 
@@ -139,4 +162,5 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-//homeSectionTitle
+
+

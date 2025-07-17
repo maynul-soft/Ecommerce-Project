@@ -1,11 +1,13 @@
+import 'package:crafty_bay_ecommerce/app/app.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/login_screen.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/otp_verification_screen.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/register_screen.dart';
 import 'package:crafty_bay_ecommerce/features/common/ui/screens/main_bottom_nav_screen.dart';
+import 'package:crafty_bay_ecommerce/features/products/ui/screens/create_review_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_detail_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_catagory_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:crafty_bay_ecommerce/features/products/ui/screens/review_screen.dart';
 import 'package:flutter/material.dart';
 import '../features/auth/ui/screens/splash_screen.dart';
 import '../features/home/ui/screens/home_screen.dart';
@@ -20,7 +22,8 @@ class AppRoutes{
     }else if (setting.name == RegisterScreen.name){
       screenWidgets = RegisterScreen();
     }else if (setting.name == OtpVerificationScreen.name){
-      screenWidgets = OtpVerificationScreen();
+      String? email = setting.arguments as String?;
+      screenWidgets = OtpVerificationScreen(email: email??'null',);
     }else if (setting.name == HomeScreen.name){
       screenWidgets = HomeScreen();
     }else if (setting.name == ProductCategoryScreen.name){
@@ -32,6 +35,10 @@ class AppRoutes{
       screenWidgets = ProductList(category: category);
     }else if(setting.name == ProductDetailScreen.name){
       screenWidgets = ProductDetailScreen();
+    }else if (setting.name == ReviewScreen.name){
+      screenWidgets = ReviewScreen();
+    }else if (setting.name == CreateReviewScreen.name){
+      screenWidgets = CreateReviewScreen();
     }
     return MaterialPageRoute(builder: (context) => screenWidgets);
   }

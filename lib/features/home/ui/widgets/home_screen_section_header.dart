@@ -1,4 +1,3 @@
-import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_catagory_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../app/app_colors.dart';

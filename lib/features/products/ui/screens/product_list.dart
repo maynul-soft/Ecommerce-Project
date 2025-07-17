@@ -1,6 +1,5 @@
 import 'package:crafty_bay_ecommerce/features/common/ui/widgets/product_card.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ProductList extends StatefulWidget {
   const ProductList({super.key, required this.category});

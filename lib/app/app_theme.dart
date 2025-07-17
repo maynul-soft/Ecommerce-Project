@@ -16,8 +16,8 @@ class AppTheme {
 
   static TextTheme get _textTheme {
     return TextTheme(
-        titleLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-        titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.normal),
+        titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
         bodySmall: TextStyle(fontSize: 13, color: Colors.grey),
         bodyMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,overflow: TextOverflow.ellipsis,),
         labelSmall: TextStyle(fontSize: 11, color: Colors.black),
@@ -27,12 +27,12 @@ class AppTheme {
 
   static InputDecorationTheme get _inputDecorationTheme {
     return InputDecorationTheme(
-      border: OutlineInputBorder(borderSide: _getBorder(AppColors.themColor)),
+      border: OutlineInputBorder(borderSide: _getBorder(AppColors.themColor.shade500)),
       enabledBorder: OutlineInputBorder(
-        borderSide: _getBorder(AppColors.themColor),
+        borderSide: _getBorder(AppColors.themColor.shade500),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: _getBorder(AppColors.themColor),
+        borderSide: _getBorder(AppColors.themColor.shade500),
       ),
       errorBorder: OutlineInputBorder(borderSide: _getBorder(Colors.red)),
 
