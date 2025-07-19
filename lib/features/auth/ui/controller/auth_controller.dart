@@ -7,22 +7,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/login_model.dart';
 
 class AuthController extends GetxController {
-  static   UserModel? userinfo;
-  static   String? token;
+  static   UserModel? _userInfo;
+  static   String? _token;
+
+  String? get  token => _token;
+  UserModel? get  userInfo => _userInfo;
 
   static final Logger _logger = Logger();
 
-  static final String _userifoKey = 'use-info';
+  static final String _userInfoKey = 'use-info';
   static final String _tokenKey = 'use-token';
 
   static Future<void> saveUserInformation({required String userToken, required Map<String,dynamic> user })async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     sharedPreferences.setString(_tokenKey, userToken);
-    sharedPreferences.setString(_userifoKey, jsonEncode(user));
+    sharedPreferences.setString(_userInfoKey, jsonEncode(user));
 
-    userinfo = UserModel.fromJson(user);
-    token = userToken;
+   _userInfo = UserModel.fromJson(user);
+    _token = userToken;
 
     _logger.i('Data saved successfully');
 
@@ -32,13 +35,13 @@ class AuthController extends GetxController {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     String? userToken = sharedPreferences.getString(_tokenKey);
-    String? stringUserInfo = sharedPreferences.getString(_userifoKey);
+    String? stringUserInfo = sharedPreferences.getString(_userInfoKey);
 
     if(userToken != null && stringUserInfo != null ){
       Map<String,dynamic> getUserInfo = jsonDecode(stringUserInfo);
 
-      token = userToken;
-      userinfo = UserModel.fromJson(getUserInfo);
+      _token = userToken;
+      _userInfo = UserModel.fromJson(getUserInfo);
 
     _logger.i('===>get user data from sharedpref');
     }else{
@@ -47,13 +50,22 @@ class AuthController extends GetxController {
 
   }
   isLoggedIn(){
-   if(token != null && userinfo != null){
+   if(_token != null && _userInfo != null){
      _logger.i('===>logged in');
      return true;
    }else{
      _logger.i('===>not logged in');
      return false;
    }
+  }
+
+  Future<void>logOut()async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.clear();
+    _token = null;
+    _userInfo = null;
+
+
   }
 
 

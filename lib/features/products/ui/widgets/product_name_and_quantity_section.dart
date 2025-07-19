@@ -1,33 +1,35 @@
+import 'package:crafty_bay_ecommerce/features/products/controller/product_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../app/app_colors.dart';
 import '../../controller/prodct_quantity_controller.dart';
 
 class ProductNameAndQuantitySection extends StatelessWidget {
-  final String title;
-  final Color? color;
 
-
-  const ProductNameAndQuantitySection({ super.key, required this.title, this.color});
+  const ProductNameAndQuantitySection({ super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            style: TextStyle(overflow: TextOverflow.visible, color: color?? Colors.black),
-          ),
-        ),
-        GetBuilder<ProductQuantityController>(
-            builder: (context) {
-              return increaseDecreaseSection();
-            }
-        ),
-      ],
+    return GetBuilder<ProductDetailsController>(
+      builder: (controller) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                controller.productData?.title?? '',
+                style: TextStyle(overflow: TextOverflow.visible, ),
+              ),
+            ),
+            GetBuilder<ProductQuantityController>(
+                builder: (context) {
+                  return increaseDecreaseSection();
+                }
+            ),
+          ],
+        );
+      }
     );
   }
 

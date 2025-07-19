@@ -1,18 +1,30 @@
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../app/app_colors.dart';
 import '../../../../app/assets_path.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key});
+  const ProductCard({
+    required this.id,
+    this.title,
+    this.price,
+    this.rating,
+    this.imageUrl,
+    super.key,
+  });
 
   static const height = 170.0;
+
+  final String? title;
+  final String? rating;
+  final int? price;
+  final String? imageUrl;
+  final String id;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()=>Navigator.pushNamed(context, ProductDetailScreen.name) ,
+      onTap: () => Navigator.pushNamed(context, ProductDetailScreen.name,arguments: id),
       child: Container(
         width: 120,
         height: height,
@@ -40,42 +52,70 @@ class ProductCard extends StatelessWidget {
                   topRight: Radius.circular(10),
                 ),
               ),
-              child: Image.asset(AssetsPath.productImagePng,height: 100,),
+              child:
+                  imageUrl != null
+                      ? ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(10),
+                          topLeft: Radius.circular(10),
+                        ),
+                        child: Image.network(
+                          imageUrl!,
+                          height: 100,
+                          width: 120,
+                          fit: BoxFit.fill,
+                        ),
+                      )
+                      : Image.asset(AssetsPath.productImagePng, height: 100),
             ),
-            Padding(padding: EdgeInsets.only(bottom: 4,left: 4,right: 4),
-            child: Column(
-              children: [
-                Text(
-                  'Nike special for new year',
-                  style: TextStyle(overflow: TextOverflow.ellipsis,color: Colors.black54),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('৳1000',style: TextTheme.of(context).labelSmall,),
-                    Wrap(
-                      children: [
-                        Icon(Icons.star, color: Colors.amber, size: 15),
-                        Text('4.7',style: TextTheme.of(context).labelSmall,)
-                      ],
+            Padding(
+              padding: EdgeInsets.only(bottom: 4, left: 4, right: 4),
+              child: Column(
+                children: [
+                  Text(
+                    title ?? 'Nike special for new year',
+                    style: TextStyle(
+                      overflow: TextOverflow.ellipsis,
+                      color: Colors.black54,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.themColor,
-                        borderRadius: BorderRadius.circular(4),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "${price.toString()}৳",
+                        style: TextTheme.of(context).labelSmall,
                       ),
-                      padding: EdgeInsets.all(2),
-                      child: Icon(Icons.favorite_border, size: 15,color: Colors.white,),
-                    ),
-                    SizedBox(width: 3),
-                  ],
-                ),
-              ],
-            ),)
+                      Wrap(
+                        children: [
+                          Icon(Icons.star, color: Colors.amber, size: 15),
+                          Text(
+                            rating ?? '4.7',
+                            style: TextTheme.of(context).labelSmall,
+                          ),
+                        ],
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.themColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        padding: EdgeInsets.all(2),
+                        child: Icon(
+                          Icons.favorite_border,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 3),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-  
 }

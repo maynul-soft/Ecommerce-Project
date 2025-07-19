@@ -39,7 +39,7 @@ class _WishListState extends State<WishList> {
             ),
             itemBuilder: ((BuildContext context, int index) {
               return FittedBox(
-                child: ProductCard(),
+                child: ProductCard(id: ''),
               );
             }),
           ),

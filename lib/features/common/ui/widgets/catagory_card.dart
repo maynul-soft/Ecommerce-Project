@@ -18,18 +18,20 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          height: 80,
-          width: 80,
-          padding: EdgeInsets.all(17),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColors.themColor.shade100,
+        GestureDetector(
+          child: Container(
+            height: 80,
+            width: 80,
+            padding: EdgeInsets.all(17),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: AppColors.themColor.shade100,
+            ),
+            child:
+                imageUrl != null
+                    ? Image.network(imageUrl!, fit: BoxFit.fill)
+                    : Icon(icon, size: 50, color: AppColors.themColor),
           ),
-          child:
-              imageUrl != null
-                  ? Image.network(imageUrl!, fit: BoxFit.fill)
-                  : Icon(icon, size: 50, color: AppColors.themColor),
         ),
         Text(
           customTitle(categoryName),

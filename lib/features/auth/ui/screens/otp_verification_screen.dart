@@ -1,6 +1,6 @@
 import 'package:crafty_bay_ecommerce/app/app_colors.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/otp_controller.dart';
-import 'package:crafty_bay_ecommerce/features/common/loading_widget.dart';
+import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';

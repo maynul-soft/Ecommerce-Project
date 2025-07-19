@@ -5,13 +5,18 @@ class ProductSizeController extends GetxController {
   static final ProductSizeController controller = Get.find<ProductSizeController>();
 
   String selectedSize = '';
-  int selectedIndex = 0;
+  int? selectedIndex = 0;
   changeIndex(index){
     selectedIndex = index;
     update();
   }
   setSize(size){
     selectedSize = size;
+    update();
+  }
+
+  unselectSize(){
+    selectedIndex = null;
     update();
   }
 

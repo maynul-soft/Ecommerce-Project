@@ -11,8 +11,4 @@ class NetworkResponse{
     this.responseBody,
     this.errorMessage
   });
-
-
-
-
 }

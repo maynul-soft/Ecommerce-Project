@@ -1,8 +1,12 @@
+import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/main_bottom_nav_controller.dart';
 import 'package:crafty_bay_ecommerce/features/cert/screens/add_to_cart_screen.dart';
 import 'package:crafty_bay_ecommerce/features/home/controller/home_slider_controller.dart';
 import 'package:crafty_bay_ecommerce/features/home/ui/screens/home_screen.dart';
+import 'package:crafty_bay_ecommerce/features/products/controller/new_prduct_controller.dart';
+import 'package:crafty_bay_ecommerce/features/products/controller/popular_product_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/product_%20catagory_controller.dart';
+import 'package:crafty_bay_ecommerce/features/products/controller/special_product_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_catagory_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,10 +30,13 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
   }
 
   initializeAllData()async {
-   await Get.find<HomeSliderController>().getSlider();
-   await  Get.find<ProductCategoryController>().getCategoryList();
+    AuthController.getUserInformation();
+    Get.find<HomeSliderController>().getSlider();
+    Get.find<ProductCategoryController>().getCategoryList();
+    Get.find<PopularProductController>().getPopularProduct();
+    Get.find<SpecialProductController>().getSpecialProduct();
+   await Get.find<NewProductController>().getNewProduct();
   }
-
 
 
 

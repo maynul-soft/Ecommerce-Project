@@ -1,4 +1,4 @@
-import 'package:crafty_bay_ecommerce/features/common/loading_widget.dart';
+import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:crafty_bay_ecommerce/features/common/ui/screens/main_bottom_nav_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Spacer(),
               Center(child: AppLogo()),
               Spacer(),
-              LoadingWidget.froScreen(),
+              LoadingWidget.forScreen(),
               SizedBox(height: 10),
               Text('version 1.0.0', style: TextStyle(color: Colors.grey)),
             ],

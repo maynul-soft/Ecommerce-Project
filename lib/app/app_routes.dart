@@ -3,10 +3,12 @@ import 'package:crafty_bay_ecommerce/features/auth/ui/screens/login_screen.dart'
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/otp_verification_screen.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/register_screen.dart';
 import 'package:crafty_bay_ecommerce/features/common/ui/screens/main_bottom_nav_screen.dart';
+import 'package:crafty_bay_ecommerce/features/products/data/model/category_model.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/create_review_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_detail_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_catagory_screen.dart';
-import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list.dart';
+import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list_by_category_screen.dart';
+import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/review_screen.dart';
 import 'package:flutter/material.dart';
 import '../features/auth/ui/screens/splash_screen.dart';
@@ -30,15 +32,19 @@ class AppRoutes{
       screenWidgets = ProductCategoryScreen();
     }else if(setting.name == MainBottomNavScreen.name){
       screenWidgets = MainBottomNavScreen();
-    }else if (setting.name == ProductList.name){
-      final String category = setting.arguments as String;
-      screenWidgets = ProductList(category: category);
+    }else if (setting.name == ProductListByCategoryScreen.name){
+      final CategoryModel category = setting.arguments as CategoryModel;
+      screenWidgets = ProductListByCategoryScreen(category: category);
     }else if(setting.name == ProductDetailScreen.name){
-      screenWidgets = ProductDetailScreen();
+      final _id = setting.arguments as String;
+      screenWidgets = ProductDetailScreen(id:  _id,);
     }else if (setting.name == ReviewScreen.name){
       screenWidgets = ReviewScreen();
     }else if (setting.name == CreateReviewScreen.name){
       screenWidgets = CreateReviewScreen();
+    }else if (setting.name == ProductListScreen.name){
+      final _tag = setting.arguments as String;
+      screenWidgets = ProductListScreen(tag: _tag);
     }
     return MaterialPageRoute(builder: (context) => screenWidgets);
   }

@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:crafty_bay_ecommerce/app/app_colors.dart';
+import 'package:crafty_bay_ecommerce/app/assets_path.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/login_screen.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
@@ -139,17 +140,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             .productData!
                             .colors[Get.find<ColorController>().currentIndex],
                     size:
-                        Get.find<ProductSizeController>().selectedIndex != null
-                            ? Get.find<ProductDetailsController>()
-                                .productData!
-                                .colors[Get.find<ProductSizeController>()
-                                .selectedIndex!]
-                            : null,
-                  );
+                        Get.find<ProductDetailsController>()
+                            .productData!
+                            .colors[Get.find<ProductSizeController>()
+                            .selectedIndex],                  );
                 }
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 13),
+                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 1AAZsw zaw2q aszswed 3cwc sdx cdsew3c dsx ds ewc3 dsxc f rv4v efdc fdvre4v dfc fvdr ev4 dc de4vvr dfc vfr5bv fv fgtr5b fgv bgft56bg b nhgy 6n hgb hgyt6
                 decoration: BoxDecoration(
                   color: AppColors.themColor,
                   borderRadius: BorderRadius.circular(10),
@@ -221,9 +219,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 entry.value,
                               );
                             },
-                            onDoubleTap: () {
-                              ProductSizeController.controller.unselectSize();
-                            },
                             child: GetBuilder<ProductSizeController>(
                               builder: (context) {
                                 return Container(
@@ -276,7 +271,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           );
                         }).toList(),
                   ),
-                  Text('double tap to unselect size',style: TextStyle(color: Colors.grey,fontSize: 12,fontWeight: FontWeight.normal),)
                 ],
               )
               : SizedBox.shrink(),
@@ -408,6 +402,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ],
       ),
     );
+    ;
   }
 
   Widget productDetailCarousalSlider(List<String> productImages) {

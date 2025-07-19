@@ -44,7 +44,7 @@ class ProductCategoryController extends GetxController {
     _currentPage++;
 
     NetworkResponse response = await Get.find<NetworkClient>().getRequest(
-      url: Urls.productCatagoryUrl(count: count, page: currentPage),
+      url: Urls.productCategoryUrl(count: count, page: currentPage),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -68,7 +68,6 @@ class ProductCategoryController extends GetxController {
 
 
     if (currentPage > 1) {
-     await Future.delayed(Duration(seconds: 2));
       _isLoading = false;
       update();
     } else {

@@ -1,6 +1,6 @@
 import 'package:crafty_bay_ecommerce/features/auth/data/models/registration_request_model.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/registration_controller.dart';
-import 'package:crafty_bay_ecommerce/features/common/loading_widget.dart';
+import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../widgets/logo_header.dart';

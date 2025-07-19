@@ -1,40 +1,51 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
-
-
 
 part 'network_response.dart';
 
 class NetworkClient {
   final VoidCallback onUnAuthorize;
   String defaultErrorMessage = 'Something went wrong';
-  Map<String,String> commonHeader ;
+  Map<String, String> commonHeader;
+
   final Logger _logger = Logger();
+
   NetworkClient({required this.onUnAuthorize, required this.commonHeader});
 
   Future<NetworkResponse> getRequest({required String url}) async {
     try {
       Uri uri = Uri.parse(url);
 
-      Response response = await get(uri, headers: {
-        "Content-Type": "application/json"
-      });
+      _logger.i('''
+      pre request log
+      ==> $url
+      ''');
+
+      Response response = await get(
+        uri,
+        headers: {"Content-Type": "application/json"},
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var decodeJson = jsonDecode(response.body);
-        _logger.d(decodeJson);
+        _logger.i('''
+      post request log
+      ==> $url
+      ==> $decodeJson
+      ''');
         return NetworkResponse(
           isSuccess: true,
           statusCode: response.statusCode,
           responseBody: decodeJson,
         );
-      } else if (response.statusCode == 402 || response.statusCode == 403) {
-        _logger.e(
-          'unAuth'
-        );
+      } else if (response.statusCode == 401|| response.statusCode == 402 || response.statusCode == 403) {
+        _logger.e('status ${response.statusCode}, body==> ${response.body} unAuth');
         onUnAuthorize();
         return NetworkResponse(
           isSuccess: false,
@@ -44,18 +55,24 @@ class NetworkClient {
       } else {
         var decodedJson = jsonDecode(response.body);
         _logger.d(decodedJson);
+        _logger.i('''
+      post request log
+      ==> $url
+      ==> $decodedJson
+      ''');
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
           errorMessage: decodedJson['msg'],
         );
       }
-    }on SocketException {
+    } on SocketException {
       return NetworkResponse(
         isSuccess: false,
         statusCode: -1,
         errorMessage: 'Check your network connection and try again later',
-      );} catch (e) {
+      );
+    } catch (e) {
       _logger.e(e.toString());
       return NetworkResponse(
         isSuccess: false,
@@ -71,14 +88,25 @@ class NetworkClient {
   }) async {
     try {
       Uri uri = Uri.parse(url);
-      
+
+      Map<String, String> commonHeader = {
+        "Content-Type": "application/json",
+        "token": Get.find<AuthController>().token ?? ''
+      };
+
       _logger.i('''
       pre request log
       ==> $url
       ==> ${jsonEncode(body)}
       ''');
 
-      Response response = await post(uri, body: jsonEncode(body),headers: commonHeader );
+
+
+      Response response = await post(
+        uri,
+        body: jsonEncode(body),
+        headers: commonHeader,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var decodedJson = jsonDecode(response.body);
@@ -89,7 +117,7 @@ class NetworkClient {
           responseBody: decodedJson,
         );
       } else if (response.statusCode == 401) {
-        _logger.d('unAuth');
+        _logger.e('status ${response.statusCode}, body==> ${response.body} unAuth');
         onUnAuthorize();
         return NetworkResponse(
           isSuccess: false,
@@ -102,7 +130,7 @@ class NetworkClient {
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
-          errorMessage: decodedJson['msg']?? defaultErrorMessage,
+          errorMessage: decodedJson['msg'] ?? defaultErrorMessage,
         );
       }
     } on SocketException {
@@ -120,7 +148,6 @@ class NetworkClient {
       );
     }
   }
-
 
   Future<NetworkResponse> putRequest({
     required String url,
@@ -213,6 +240,7 @@ class NetworkClient {
       );
     }
   }
+
   Future<NetworkResponse> deleteRequest({
     required String url,
     required Map<String, dynamic>? body,
@@ -257,9 +285,6 @@ class NetworkClient {
       );
     }
   }
-
 }
 
-preRequestLog(){
-
-}
+preRequestLog() {}
