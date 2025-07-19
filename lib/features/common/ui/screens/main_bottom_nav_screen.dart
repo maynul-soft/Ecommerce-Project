@@ -1,6 +1,6 @@
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/main_bottom_nav_controller.dart';
-import 'package:crafty_bay_ecommerce/features/cert/screens/add_to_cart_screen.dart';
+import 'package:crafty_bay_ecommerce/features/cert/screens/cart_checkout_screen.dart';
 import 'package:crafty_bay_ecommerce/features/home/controller/home_slider_controller.dart';
 import 'package:crafty_bay_ecommerce/features/home/ui/screens/home_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/new_prduct_controller.dart';
@@ -11,7 +11,7 @@ import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_catago
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../wish_list/ui/screens/wish_list.dart';
+import '../../../wish_list/ui/screens/wish_list_screen.dart';
 
 class MainBottomNavScreen extends StatefulWidget {
   const MainBottomNavScreen({super.key});
@@ -29,13 +29,15 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
    initializeAllData();
   }
 
-  initializeAllData()async {
-    AuthController.getUserInformation();
-    Get.find<HomeSliderController>().getSlider();
-    Get.find<ProductCategoryController>().getCategoryList();
-    Get.find<PopularProductController>().getPopularProduct();
-    Get.find<SpecialProductController>().getSpecialProduct();
-   await Get.find<NewProductController>().getNewProduct();
+  initializeAllData() {
+   return  WidgetsBinding.instance.addPostFrameCallback((_){
+      AuthController.getUserInformation();
+      Get.find<HomeSliderController>().getSlider();
+      Get.find<ProductCategoryController>().getCategoryList();
+      Get.find<PopularProductController>().getPopularProduct();
+      Get.find<SpecialProductController>().getSpecialProduct();
+       Get.find<NewProductController>().getNewProduct();
+    });
   }
 
 
@@ -43,8 +45,8 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
   List<Widget> screens = [
     HomeScreen(),
     ProductCategoryScreen(),
-    AddToCartScreen(),
-    WishList(),
+    CartCheckOutScreen(),
+    WishListScreen(),
   ];
 
   MainBottomNavController mainBottomNavController =

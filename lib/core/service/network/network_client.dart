@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
-import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 
@@ -12,13 +9,15 @@ part 'network_response.dart';
 class NetworkClient {
   final VoidCallback onUnAuthorize;
   String defaultErrorMessage = 'Something went wrong';
-  Map<String, String> commonHeader;
+  Map<String, String> Function() commonHeader;
+  final VoidCallback onSocketException;
 
   final Logger _logger = Logger();
 
-  NetworkClient({required this.onUnAuthorize, required this.commonHeader});
+  NetworkClient({required this.onSocketException, required this.onUnAuthorize, required this.commonHeader});
 
   Future<NetworkResponse> getRequest({required String url}) async {
+
     try {
       Uri uri = Uri.parse(url);
 
@@ -29,7 +28,7 @@ class NetworkClient {
 
       Response response = await get(
         uri,
-        headers: {"Content-Type": "application/json"},
+        headers: commonHeader(),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -67,6 +66,7 @@ class NetworkClient {
         );
       }
     } on SocketException {
+      onSocketException();
       return NetworkResponse(
         isSuccess: false,
         statusCode: -1,
@@ -89,10 +89,10 @@ class NetworkClient {
     try {
       Uri uri = Uri.parse(url);
 
-      Map<String, String> commonHeader = {
-        "Content-Type": "application/json",
-        "token": Get.find<AuthController>().token ?? ''
-      };
+      // Map<String, String> commonHeader = {
+      //   "Content-Type": "application/json",
+      //   "token": Get.find<AuthController>().token ?? ''
+      // };
 
       _logger.i('''
       pre request log
@@ -105,7 +105,7 @@ class NetworkClient {
       Response response = await post(
         uri,
         body: jsonEncode(body),
-        headers: commonHeader,
+        headers: commonHeader(),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -134,6 +134,7 @@ class NetworkClient {
         );
       }
     } on SocketException {
+      onSocketException();
       return NetworkResponse(
         isSuccess: false,
         statusCode: -1,
@@ -182,6 +183,7 @@ class NetworkClient {
         );
       }
     } on SocketException {
+      onSocketException();
       return NetworkResponse(
         isSuccess: false,
         statusCode: -1,
@@ -202,7 +204,7 @@ class NetworkClient {
   }) async {
     try {
       Uri uri = Uri.parse(url);
-      Response response = await patch(uri, body: jsonEncode(body));
+      Response response = await patch(uri, body: jsonEncode(body),headers: commonHeader());
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var decodedJson = jsonDecode(response.body);
@@ -227,6 +229,7 @@ class NetworkClient {
         );
       }
     } on SocketException {
+      onSocketException();
       return NetworkResponse(
         isSuccess: false,
         statusCode: -1,
@@ -243,11 +246,13 @@ class NetworkClient {
 
   Future<NetworkResponse> deleteRequest({
     required String url,
-    required Map<String, dynamic>? body,
+
   }) async {
     try {
       Uri uri = Uri.parse(url);
-      Response response = await patch(uri, body: jsonEncode(body));
+      Response response = await delete(uri,headers: commonHeader());
+
+      _logger.e('Post log ==> ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var decodedJson = jsonDecode(response.body);
@@ -264,17 +269,18 @@ class NetworkClient {
           errorMessage: defaultErrorMessage,
         );
       } else {
-        var decodedJaon = jsonDecode(response.body);
+        var decodedJson = jsonDecode(response.body);
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,
-          errorMessage: decodedJaon,
+          errorMessage: decodedJson,
         );
       }
     } on SocketException {
+      onSocketException();
       return NetworkResponse(
         isSuccess: false,
-        statusCode: -1,
+        statusCode: -10,
         errorMessage: 'Check your network connection and try again later',
       );
     } catch (e) {

@@ -1,3 +1,5 @@
+import 'package:crafty_bay_ecommerce/features/cert/controller/get_cart_product_controller.dart';
+import 'package:crafty_bay_ecommerce/features/cert/data/model/cart_checkout_model.dart';
 import 'package:get/get.dart';
 
 class ProductQuantityController extends GetxController {
@@ -14,6 +16,4 @@ class ProductQuantityController extends GetxController {
     quantity--;
     update();
   }
-
-
 }

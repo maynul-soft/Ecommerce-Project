@@ -16,6 +16,7 @@ class AppTheme {
 
   static TextTheme get _textTheme {
     return TextTheme(
+
         titleLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.normal),
         titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
         bodySmall: TextStyle(fontSize: 13, color: Colors.grey),

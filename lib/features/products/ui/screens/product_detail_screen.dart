@@ -6,9 +6,11 @@ import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_wid
 import 'package:crafty_bay_ecommerce/features/products/controller/add_cart_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/color_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/current_slide_indicator_controller.dart';
+import 'package:crafty_bay_ecommerce/features/products/controller/prodct_quantity_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/product_details_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/product_size_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/review_screen.dart';
+import 'package:crafty_bay_ecommerce/features/wish_list/controller/add_to_wish_list_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../widgets/product_name_and_quantity_section.dart';
@@ -66,7 +68,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 children: [
                                   ProductNameAndQuantitySection(),
                                   const SizedBox(height: 10),
-                                  buildReviewSection(),
+                                  buildReviewSection(widget.id),
                                   const SizedBox(height: 10),
                                   buildColorSection(
                                     controller.productData?.colors,
@@ -133,13 +135,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   );
                 } else {
                   Get.find<AddToCartController>().addToCart(
+                    quantity: Get.find<ProductQuantityController>().quantity,
+
                     id: Get.find<ProductDetailsController>().productData!.id,
-                    color:
+                    color: Get.find<ProductDetailsController>().productData!.colors.isNotEmpty?
                         Get.find<ProductDetailsController>()
                             .productData!
-                            .colors[Get.find<ColorController>().currentIndex],
+                            .colors[Get.find<ColorController>().currentIndex] : null,
                     size:
-                        Get.find<ProductSizeController>().selectedIndex != null
+                        Get.find<ProductSizeController>().selectedIndex != null && Get.find<ProductDetailsController>().productData!.sizes.isNotEmpty
                             ? Get.find<ProductDetailsController>()
                                 .productData!
                                 .colors[Get.find<ProductSizeController>()
@@ -345,7 +349,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         : SizedBox.shrink();
   }
 
-  Widget buildReviewSection() {
+  Widget buildReviewSection(String id) {
     return Row(
       children: [
         Icon(Icons.star, color: Colors.amber, size: 20),
@@ -361,7 +365,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         const SizedBox(width: 8),
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, ReviewScreen.name);
+            Navigator.pushNamed(context, ReviewScreen.name, arguments: id);
           },
           child: Text(
             'Reviews',
@@ -376,7 +380,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         Card(
           color: AppColors.themColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          child: Icon(Icons.favorite_outline, color: Colors.white),
+          child: IconButton(onPressed: (){
+            Get.find<AddToWishListController>().addToWishList(id: id);
+          }, icon: Icon(Icons.favorite_outline, color: Colors.white)),
         ),
       ],
     );

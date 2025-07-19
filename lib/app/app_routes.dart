@@ -2,6 +2,7 @@ import 'package:crafty_bay_ecommerce/app/app.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/login_screen.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/otp_verification_screen.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/register_screen.dart';
+import 'package:crafty_bay_ecommerce/features/checkout/ui/screens/place_order_screen.dart';
 import 'package:crafty_bay_ecommerce/features/common/ui/screens/main_bottom_nav_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/data/model/category_model.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/create_review_screen.dart';
@@ -39,12 +40,16 @@ class AppRoutes{
       final _id = setting.arguments as String;
       screenWidgets = ProductDetailScreen(id:  _id,);
     }else if (setting.name == ReviewScreen.name){
-      screenWidgets = ReviewScreen();
+      String id = setting.arguments as String;
+      screenWidgets = ReviewScreen(id: id);
     }else if (setting.name == CreateReviewScreen.name){
-      screenWidgets = CreateReviewScreen();
+      String id = setting.arguments as String;
+      screenWidgets = CreateReviewScreen(id: id,);
     }else if (setting.name == ProductListScreen.name){
       final _tag = setting.arguments as String;
       screenWidgets = ProductListScreen(tag: _tag);
+    }else if(setting.name == PlaceOrderScreen.name){
+      screenWidgets = PlaceOrderScreen();
     }
     return MaterialPageRoute(builder: (context) => screenWidgets);
   }
