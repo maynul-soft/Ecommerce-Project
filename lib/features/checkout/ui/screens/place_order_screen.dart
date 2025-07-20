@@ -1,4 +1,5 @@
 import 'package:crafty_bay_ecommerce/features/cert/controller/get_cart_product_controller.dart';
+import 'package:crafty_bay_ecommerce/features/checkout/data/model/payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 class PlaceOrderScreen extends StatefulWidget {
@@ -151,21 +152,18 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                        height: 100,
                        width: 100,
                        decoration: BoxDecoration(
-
+                         image: DecorationImage(image: NetworkImage('https://www.digitallockerhouse.com/public/assets/img/cards/sslcommerz.png'),fit: BoxFit.fill,)
                        ),
-                       child: Image.network('https://www.digitallockerhouse.com/public/assets/img/cards/sslcommerz.png',
-                       fit: BoxFit.fill,
+                       child: Icon(Icons.check_circle_outlined,color: Colors.white,size: 30)
                        ),
-                     )
                     ],
                   )
-
                 ],),
               ),
             ),
             ),
             const SizedBox(height: 15,),
-            ElevatedButton(onPressed:_onTapPlaceOrder, child: Text('Place order'))
+             ElevatedButton(onPressed:_onTapPlaceOrder, child: Text('Place order'))
           ],
         ),
       ),
@@ -184,8 +182,14 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     "postal_code": _postTeController.text.trim(),
     "phone": _mobileNumberTeController.text.trim()
   },
-    "redirect_url":"https://jsonplaceholder.typicode.com/posts"
+    "redirect_url": ''  //"https://jsonplaceholder.typicode.com/posts"
   };
+
+  if(_formKey.currentState!.validate()){
+    Get.find<PaymentController>().makePayment(body);
+  }
+
+
 
 
   }

@@ -10,6 +10,7 @@ class Urls{
   static const String createReviewUrl = '$_baseUrl/review';
   static const String wishListUrl = '$_baseUrl/wishlist';
   static const String addToWishlistUrl = '$_baseUrl/wishlist';
+  static const String createOrderUrl = '$_baseUrl/order';
   static  String productCategoryUrl({required int count, required int page }) => '$_baseUrl/categories?count=$count&page=$page';
   static String productListByCategory({required int count, required int page, required String categoryId}) => '$_baseUrl/products?count=$count&page=$page&category=$categoryId';
   static String productByTagUrl({required String tag}) => '$_baseUrl/products?tag=$tag';
