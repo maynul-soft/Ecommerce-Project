@@ -1,16 +1,34 @@
 # crafty_bay_ecommerce
+# 🛒 E-commerce App (Flutter)
 
-A new Flutter project.
+A fully functional, scalable e-commerce mobile application built using **Flutter** and **Firebase**. This project is designed to deliver a modern, responsive shopping experience with smooth UI, real-time backend services, and secure authentication.
 
-## Getting Started
+## 🚀 Features
 
-This project is a starting point for a Flutter application.
+- 🔐 **Firebase Authentication** (Sign up, Login, Password Reset)
+- 🛍️ **Product Listings** with dynamic UI
+- 🧾 **Cart Management**
+- 📦 **Order Management**
+- 🔎 **Product Details & Search**
+- 🧑‍💼 **User Profile**
+- 🌐 **REST API Integration**
+- 📱 **Responsive UI** for different screen sizes
+- 🗂️ **State Management** using `Provider`
+- 🔔 **Firebase Cloud Messaging (Push Notifications)**
+- 🧰 **Crashlytics & Analytics**
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠️ Technologies Used
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter & Dart
+- Firebase (Auth, Firestore, Messaging, Crashlytics)
+- GetX (State Management)
+- Git & FVM
+- RESTful APIs
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📦 Installation
+
+```bash
+git clone https://github.com/maynul-soft/Ecommerce-Project.git
+cd Ecommerce-Project
+flutter pub get
+flutter run
