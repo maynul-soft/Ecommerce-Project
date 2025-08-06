@@ -4,10 +4,9 @@ import 'package:crafty_bay_ecommerce/features/products/controller/new_prduct_con
 import 'package:crafty_bay_ecommerce/features/products/controller/popular_product_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/product_list_by_category_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/special_product_controller.dart';
-import 'package:crafty_bay_ecommerce/features/products/data/model/category_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key, required this.tag});
@@ -33,6 +32,7 @@ class _ProductList extends State<ProductListScreen> {
 
   void loadMoreData() {
     if (_scrollController.position.extentAfter < 50) {
+
       // Get.find<ProductListByCategoryController>().getProductList(
       //   categoryId: widget.category.id,
       // );
@@ -41,6 +41,8 @@ class _ProductList extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _controller = sourceCheck();
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -52,9 +54,9 @@ class _ProductList extends State<ProductListScreen> {
           style: TextTheme.of(context).headlineSmall,
         ),
       ),
-      body: GetBuilder(
-        init: _controller,
-        builder: (_) {
+      body: Consumer<ProductListByCategoryProvider>(
+
+        builder: (_,__,___) {
           return Visibility(
             visible: _controller.isLoading == false,
             replacement: Center(child: LoadingWidget.forScreen()),
@@ -109,16 +111,15 @@ class _ProductList extends State<ProductListScreen> {
 
  dynamic sourceCheck(){
     if(widget.tag.toLowerCase() == 'new'){
-     return  Get.find<NewProductController>();
+     return  Provider.of<NewProductProvider>(context,listen: false);
     }else if(widget.tag.toLowerCase() == 'special'){
-      return  Get.find<SpecialProductController>();
+      return  Provider.of<SpecialProductProvider>(context,listen:  false);
     }else if(widget.tag.toLowerCase() == 'popular'){
-      return  Get.find<PopularProductController>();
+      return Provider.of<PopularProductProvider>( context, listen: false,);
     }else {
-      return  Get.find<NewProductController>();
+      return  Provider.of<NewProductProvider>(context, listen: false,);
     }
   }
-
 
   _onTapBack() {
     Navigator.pop(context);

@@ -1,11 +1,12 @@
-import 'package:crafty_bay_ecommerce/app/app_colors.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_colors.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/otp_controller.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import '../widgets/logo_header.dart';
-import 'package:get/get.dart';
+
 
 class OtpVerificationScreen extends StatefulWidget {
   OtpVerificationScreen({super.key, required this.email});
@@ -22,17 +23,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController _otpTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  OtpController otpController = Get.find<OtpController>();
+  // OtpController otpController = Get.find<OtpController>();
+  late OtpProvider otpProvider;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    otpController.countOtp();
+    otpProvider = Provider.of<OtpProvider>(context, listen: false);
+    otpProvider.countOtp();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -86,10 +90,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _onTapSubmitOtp,
-                  child: GetBuilder<OtpController>(
-                    builder: (controller) {
+                  child: Consumer<OtpProvider>(
+                    builder: (_,provider,_) {
                       return Visibility(
-                        visible: controller.isLoading == false,
+                        visible: provider.isLoading == false,
                         replacement: LoadingWidget.forButton(),
                         child: Text('Next'),
                       );
@@ -97,20 +101,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                 ),
 
-                GetBuilder<OtpController>(
-                  builder: (controller) {
+                Consumer<OtpProvider>(
+                  builder: ( _, provider, _) {
                     return Column(
                       children: [
                         const SizedBox(height: 30),
                         Text(
-                          controller.otpValidity > 0
-                              ? 'This code will expired in ${controller.otpValidity} seconds'
+                          provider.otpValidity > 0
+                              ? 'This code will expired in ${provider.otpValidity} seconds'
                               : 'Otp expired',style: TextStyle(fontSize: 15),
                         ),
 
                         const SizedBox(height: 20),
-                        controller.otpValidity <= 0? GestureDetector(
-                          onTap: (){controller.resendOtp();},
+                        provider.otpValidity <= 0? GestureDetector(
+                          onTap: (){provider.resendOtp(context);},
                             child: Text(
                               'Resend Otp',
                               style: TextStyle(
@@ -134,7 +138,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   _onTapSubmitOtp() {
     if (_formKey.currentState!.validate()) {
-      Get.find<OtpController>().verifyOtp(
+      context.read<OtpProvider>().verifyOtp(
+        context,
         email: widget.email,
         otp: _otpTEController.text,
       );

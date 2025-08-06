@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../app/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
 class HomeScreenSectionHeader extends StatelessWidget {
    const HomeScreenSectionHeader({
     super.key, required this.header,

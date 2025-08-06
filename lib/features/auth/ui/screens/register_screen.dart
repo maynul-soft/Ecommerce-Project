@@ -2,7 +2,7 @@ import 'package:crafty_bay_ecommerce/features/auth/data/models/registration_requ
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/registration_controller.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../widgets/logo_header.dart';
 import '../widgets/validator.dart';
 
@@ -136,10 +136,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: _onTapSignup,
-                    child: GetBuilder<RegistrationController>(
-                      builder: (controller) {
+                    child: Consumer<RegistrationProvider>(
+                      builder: (context, provider, _) {
                         return Visibility(
-                            visible: Get.find<RegistrationController>().isLoading == false,
+                            visible: provider.isLoading == false,
                             replacement: LoadingWidget.forButton(),
                             child: Text('SignUp'));
                       }
@@ -164,7 +164,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       mobile: _mobileTeController.text.trim(),
     );
     if (_formKey.currentState!.validate()) {
-       await Get.find<RegistrationController>().registration(registrationInfo);
+       await context.read<RegistrationProvider>().registration(context, registrationInfo);
 
     }
   }

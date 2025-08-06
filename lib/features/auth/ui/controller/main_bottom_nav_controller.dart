@@ -1,19 +1,19 @@
-import 'package:get/get.dart';
-class MainBottomNavController extends GetxController{
+import 'package:flutter/material.dart';
+class MainBottomNavProvider extends ChangeNotifier{
   int selectedIndex = 0;
 
 
   changeScreen(index){
     selectedIndex = index;
-    update();
+    notifyListeners();
   }
   gotoCategoryScreen(){
     selectedIndex = 1;
-    update();
+    notifyListeners();
   }
   backToHomeScreen(){
     selectedIndex = 0;
-    update();
+    notifyListeners();
   }
 
 

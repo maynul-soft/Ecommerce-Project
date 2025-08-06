@@ -1,21 +1,22 @@
 import 'package:crafty_bay_ecommerce/features/products/data/model/product_card_model.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
-import '../../../app/urls.dart';
-import '../../../core/service/network/network_client.dart';
+import 'package:provider/provider.dart';
+import '../../../core/urls.dart';
+import '../../../core/service/network_client.dart';
 
-class PopularProductController extends GetxController {
+class PopularProductProvider extends ChangeNotifier {
   bool isLoading = false;
   List<ProductCardModel> popularProductList = [];
   List<ProductCardModel> productList = [];
 
   final Logger _logger = Logger();
 
-  Future<void> getPopularProduct() async {
+  Future<void> getPopularProduct(context) async {
     isLoading = true;
-    update();
+    notifyListeners();
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).getRequest(
       url: Urls.productByTagUrl(tag: 'Popular'),
     );
 
@@ -45,11 +46,11 @@ class PopularProductController extends GetxController {
       _logger.w("this is temp list $tempList");
       popularProductList = tempList.sublist(0,tempList.length>8? 8: tempList.length);
       productList = tempList;
-      update();
+      notifyListeners();
 
       _logger.w("this is product list $tempList");
     }
     isLoading = false;
-    update();
+    notifyListeners();
   }
 }

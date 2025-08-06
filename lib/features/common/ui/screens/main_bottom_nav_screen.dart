@@ -1,4 +1,4 @@
-import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
+import 'package:crafty_bay_ecommerce/features/auth/ui/controller/authProvider.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/main_bottom_nav_controller.dart';
 import 'package:crafty_bay_ecommerce/features/cert/screens/cart_checkout_screen.dart';
 import 'package:crafty_bay_ecommerce/features/home/controller/home_slider_controller.dart';
@@ -9,8 +9,7 @@ import 'package:crafty_bay_ecommerce/features/products/controller/product_%20cat
 import 'package:crafty_bay_ecommerce/features/products/controller/special_product_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_catagory_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
+import 'package:provider/provider.dart';
 import '../../../wish_list/ui/screens/wish_list_screen.dart';
 
 class MainBottomNavScreen extends StatefulWidget {
@@ -29,14 +28,16 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
    initializeAllData();
   }
 
+
+
   initializeAllData() {
    return  WidgetsBinding.instance.addPostFrameCallback((_){
-      AuthController.getUserInformation();
-      Get.find<HomeSliderController>().getSlider();
-      Get.find<ProductCategoryController>().getCategoryList();
-      Get.find<PopularProductController>().getPopularProduct();
-      Get.find<SpecialProductController>().getSpecialProduct();
-       Get.find<NewProductController>().getNewProduct();
+      AuthProvider.getUserInformation();
+      Provider.of<HomeSliderProvider>(context,listen: false).getSlider(context);
+      Provider.of<ProductCategoryProvider>(context,listen: false).getCategoryList(context);
+      Provider.of<PopularProductProvider>(context,listen: false).getPopularProduct(context);
+      Provider.of<SpecialProductProvider>(context,listen: false).getSpecialProduct(context);
+      Provider.of<NewProductProvider>(context,listen: false).getNewProduct(context);
     });
   }
 
@@ -49,16 +50,15 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
     WishListScreen(),
   ];
 
-  MainBottomNavController mainBottomNavController =
-      Get.find<MainBottomNavController>();
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BuildBottomNav(),
-      body: GetBuilder<MainBottomNavController>(
-        builder: (controller) {
-          return screens[controller.selectedIndex];
+      body: Consumer<MainBottomNavProvider>(
+        builder: (BuildContext context, provider, notifier) {
+          return screens[provider.selectedIndex];
         }
       ),
     );
@@ -73,12 +73,12 @@ class BuildBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<MainBottomNavController>(
-      builder: (controller) {
+    return Consumer<MainBottomNavProvider>(
+      builder: (context, provider, notifier) {
         return NavigationBar(
-          selectedIndex: controller.selectedIndex,
+          selectedIndex: provider.selectedIndex,
           onDestinationSelected: (int index) {
-            controller.changeScreen(index);
+            provider.changeScreen(index);
           },
           destinations: [
             NavigationDestination(icon: Icon(Icons.home), label: 'home'),

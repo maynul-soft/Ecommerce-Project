@@ -1,12 +1,11 @@
 import 'dart:convert';
-
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/models/login_model.dart';
 
-class AuthController extends GetxController {
+class AuthProvider extends ChangeNotifier {
   static   UserModel? _userInfo;
   static   String? _token;
 
@@ -64,8 +63,6 @@ class AuthController extends GetxController {
     sharedPreferences.clear();
     _token = null;
     _userInfo = null;
-
-
   }
 
 

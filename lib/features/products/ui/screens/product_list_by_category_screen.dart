@@ -3,10 +3,10 @@ import 'package:crafty_bay_ecommerce/features/common/ui/widgets/product_card.dar
 import 'package:crafty_bay_ecommerce/features/products/controller/product_list_by_category_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/data/model/category_model.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 class ProductListByCategoryScreen extends StatefulWidget {
+
   const ProductListByCategoryScreen({super.key, required this.category});
 
   final CategoryModel category;
@@ -14,26 +14,31 @@ class ProductListByCategoryScreen extends StatefulWidget {
   static final String name = 'category-list';
 
   @override
-  State<ProductListByCategoryScreen> createState() => _ProductListByCategoryScreenState();
+  State<ProductListByCategoryScreen> createState() =>
+      _ProductListByCategoryScreenState();
 }
 
-class _ProductListByCategoryScreenState extends State<ProductListByCategoryScreen> {
+class _ProductListByCategoryScreenState
+    extends State<ProductListByCategoryScreen> {
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(loadMoreData);
-    Get.find<ProductListByCategoryController>().getProductList(
-      categoryId: widget.category.id,
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_){
+          context.read<ProductListByCategoryProvider>().getProductList(context, categoryId: widget.category.id);
+        }
     );
   }
 
   void loadMoreData() async {
     if (_scrollController.position.extentAfter < 50) {
-     await  Get.find<ProductListByCategoryController>().getProductList(
-        categoryId: widget.category.id,
-      );
+      await Provider.of<ProductListByCategoryProvider>(
+        context,
+        listen: false,
+      ).getProductList(context, categoryId: widget.category.id);
     }
   }
 
@@ -50,8 +55,8 @@ class _ProductListByCategoryScreenState extends State<ProductListByCategoryScree
           style: TextTheme.of(context).headlineSmall,
         ),
       ),
-      body: GetBuilder<ProductListByCategoryController>(
-        builder: (productController) {
+      body: Consumer<ProductListByCategoryProvider>(
+        builder: (_, productController, _) {
           return Visibility(
             visible: productController.isInitialLoading == false,
             replacement: Center(child: LoadingWidget.forScreen()),

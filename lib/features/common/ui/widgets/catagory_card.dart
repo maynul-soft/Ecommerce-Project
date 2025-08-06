@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../app/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard({

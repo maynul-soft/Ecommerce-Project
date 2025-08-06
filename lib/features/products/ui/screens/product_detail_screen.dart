@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:crafty_bay_ecommerce/app/app_colors.dart';
-import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_colors.dart';
+import 'package:crafty_bay_ecommerce/features/auth/ui/controller/authProvider.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/login_screen.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/add_cart_controller.dart';
@@ -12,7 +12,7 @@ import 'package:crafty_bay_ecommerce/features/products/controller/product_size_c
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/review_screen.dart';
 import 'package:crafty_bay_ecommerce/features/wish_list/controller/add_to_wish_list_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../widgets/product_name_and_quantity_section.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -26,8 +26,6 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  final CurrentSlideIndicatorController currentSlideIndicatorController =
-      Get.find<CurrentSlideIndicatorController>();
   final CarouselSliderController carouselSliderController =
       CarouselSliderController();
 
@@ -38,15 +36,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> fetchProduct() async {
-    await Get.find<ProductDetailsController>().getProduct(widget.id);
+    WidgetsBinding.instance.addPostFrameCallback((_)async{
+      await Provider.of<ProductDetailsProvider>(context, listen:  false).getProduct(context, widget.id);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
     return SafeArea(
       child: Scaffold(
-        body: GetBuilder<ProductDetailsController>(
-          builder: (controller) {
+        body: Consumer<ProductDetailsProvider>(
+          builder: (_,controller,_) {
             return Visibility(
               visible: controller.isLoading == false,
               replacement: Center(child: LoadingWidget.forScreen()),
@@ -94,6 +98,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Container buildAddToCartSection() {
+    final provider = context.read<ProductSizeProvider>();
+
     return Container(
       height: 90,
       width: double.maxFinite,
@@ -113,8 +119,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Column(
               children: [
                 Text('Price', style: TextStyle(color: Colors.black54)),
-                GetBuilder<ProductDetailsController>(
-                  builder: (controller) {
+                Consumer<ProductDetailsProvider>(
+                  builder: (_,controller,_) {
                     return Text(
                       controller.productData?.price.toString() ?? '',
                       style: TextStyle(color: AppColors.themColor),
@@ -125,29 +131,42 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
             GestureDetector(
               onTap: () {
-                bool isLoggedIn = AuthController().isLoggedIn();
+                bool isLoggedIn = AuthProvider().isLoggedIn();
                 if (!isLoggedIn) {
-                  Get.snackbar('Sorry', 'Something went wrong');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content:  Text('Sorry Something went wrong'),
+                      )
+                  );
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     LoginScreen.name,
                     (route) => false,
                   );
                 } else {
-                  Get.find<AddToCartController>().addToCart(
-                    quantity: Get.find<ProductQuantityController>().quantity,
+                  context.read<AddToCartProvider>().addToCart(context,
+                    quantity: context.read<ProductQuantityProvider>().quantity,
 
-                    id: Get.find<ProductDetailsController>().productData!.id,
-                    color: Get.find<ProductDetailsController>().productData!.colors.isNotEmpty?
-                        Get.find<ProductDetailsController>()
-                            .productData!
-                            .colors[Get.find<ColorController>().currentIndex] : null,
-                    size:
-                        Get.find<ProductSizeController>().selectedIndex != null && Get.find<ProductDetailsController>().productData!.sizes.isNotEmpty
-                            ? Get.find<ProductDetailsController>()
+                    id: context.read<ProductDetailsProvider>().productData!.id,
+                    color:
+                    context.read<ProductDetailsProvider>()
                                 .productData!
-                                .colors[Get.find<ProductSizeController>()
-                                .selectedIndex!]
+                                .colors
+                                .isNotEmpty
+                            ? context.read<ProductDetailsProvider>()
+                                .productData!
+                                .colors[Provider.of<ColorProvider>(
+                              context, listen: false
+                            ).currentIndex]
+                            : null,
+                    size:
+                        provider.selectedIndex != null &&
+                            context.read<ProductDetailsProvider>()
+                                    .productData!
+                                    .sizes
+                                    .isNotEmpty
+                            ? context.read<ProductDetailsProvider>()
+                                .productData!
+                                .colors[provider.selectedIndex!]
                             : null,
                   );
                 }
@@ -184,7 +203,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          Get.find<ProductDetailsController>().productData?.description ?? '',
+          context.read<ProductDetailsProvider>().productData?.description ?? '',
 
           style: TextStyle(
             overflow: TextOverflow.visible,
@@ -197,6 +216,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Padding buildSizeSection(List<String>? sizes) {
+    final provider = context.read<ProductSizeProvider>();
     return Padding(
       padding: const EdgeInsets.all(0),
       child:
@@ -218,18 +238,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         sizes.asMap().entries.map((entry) {
                           return GestureDetector(
                             onTap: () {
-                              ProductSizeController.controller.changeIndex(
-                                entry.key,
-                              );
-                              ProductSizeController.controller.setSize(
-                                entry.value,
-                              );
+                              provider.changeIndex(entry.key);
+                              provider.setSize(entry.value);
                             },
                             onDoubleTap: () {
-                              ProductSizeController.controller.unselectSize();
+                              provider.unselectSize();
                             },
-                            child: GetBuilder<ProductSizeController>(
-                              builder: (context) {
+                            child: Consumer<ProductSizeProvider>(
+                              builder: (context, inProvider, _) {
                                 return Container(
                                   height: 30,
                                   width: 30,
@@ -237,20 +253,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   margin: EdgeInsets.only(right: 5),
                                   decoration: BoxDecoration(
                                     color:
-                                        ProductSizeController.controller
-                                                    .isSelected(
-                                                      key: entry.key,
-                                                    ) ==
+                                        inProvider.isSelected(key: entry.key) ==
                                                 true
                                             ? AppColors.themColor
                                             : Colors.white,
                                     borderRadius: BorderRadius.circular(50),
                                     border: Border.all(
                                       color:
-                                          ProductSizeController.controller
-                                                      .isSelected(
-                                                        key: entry.key,
-                                                      ) ==
+                                          provider.isSelected(key: entry.key) ==
                                                   true
                                               ? AppColors.themColor
                                               : Colors.grey,
@@ -263,10 +273,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         entry.value,
                                         style: TextStyle(
                                           color:
-                                              ProductSizeController.controller
-                                                          .isSelected(
-                                                            key: entry.key,
-                                                          ) ==
+                                              provider.isSelected(
+                                                        key: entry.key,
+                                                      ) ==
                                                       true
                                                   ? Colors.white
                                                   : Colors.black,
@@ -280,7 +289,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           );
                         }).toList(),
                   ),
-                  Text('double tap to unselect size',style: TextStyle(color: Colors.grey,fontSize: 12,fontWeight: FontWeight.normal),)
+                  Text(
+                    'double tap to unselect size',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
                 ],
               )
               : SizedBox.shrink(),
@@ -288,6 +304,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget buildColorSection(List<String>? colors) {
+    final provider = Provider.of<ColorProvider>(context);
     return colors != null && colors.isNotEmpty
         ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,13 +323,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       String colorName = entry.value;
                       return GestureDetector(
                         onTap: () {
-                          ColorController.controller.changeIndex(index);
+                          provider.changeIndex(index);
                           // carouselSliderController.jumpToPage(
                           //   ColorController.controller.currentIndex,
                           // ); /// it will change the image with link
                         },
-                        child: GetBuilder<ColorController>(
-                          builder: (controller) {
+                        child: Consumer<ColorProvider>(
+                          builder: (context, controller, child) {
                             return Container(
                               margin: EdgeInsets.only(right: 10),
                               padding: EdgeInsets.symmetric(
@@ -323,10 +340,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 border: Border.all(color: AppColors.themColor),
                                 borderRadius: BorderRadius.circular(30),
                                 color:
-                                    index ==
-                                            ColorController
-                                                .controller
-                                                .currentIndex
+                                    index == provider.currentIndex
                                         ? AppColors.themColor.shade200
                                         : null,
                               ),
@@ -380,9 +394,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         Card(
           color: AppColors.themColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          child: IconButton(onPressed: (){
-            Get.find<AddToWishListController>().addToWishList(id: id);
-          }, icon: Icon(Icons.favorite_outline, color: Colors.white)),
+          child: IconButton(
+            onPressed: () {
+              Provider.of<AddToWishListProvider>(context).addToWishList(context, id: id);
+            },
+            icon: Icon(Icons.favorite_outline, color: Colors.white),
+          ),
         ),
       ],
     );
@@ -436,7 +453,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         height: 250,
         viewportFraction: 1,
         onPageChanged: (int index, _) {
-          Get.find<CurrentSlideIndicatorController>().changeIndicator(index);
+          Provider.of<CurrentSlideIndicatorProvider>(
+            context,
+          ).changeIndicator(index);
         },
       ),
     );
@@ -449,10 +468,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children:
             productImages.asMap().entries.map((entry) {
-              return GetBuilder<CurrentSlideIndicatorController>(
-                builder: (controller) {
-                  int currentIndex =
-                      Get.find<CurrentSlideIndicatorController>().currentIndex;
+              return Consumer<CurrentSlideIndicatorProvider>(
+                builder: (context, provider, notifier) {
+                  int currentIndex = provider.currentIndex;
                   return Container(
                     margin: EdgeInsets.only(right: 5),
                     height: 10,

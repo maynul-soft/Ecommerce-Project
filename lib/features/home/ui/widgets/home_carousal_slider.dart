@@ -2,9 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:crafty_bay_ecommerce/features/home/controller/home_slider_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
-import '../../../../app/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
 class HomeCarousalSlider extends StatefulWidget {
   const HomeCarousalSlider({
     super.key,
@@ -17,26 +17,23 @@ class HomeCarousalSlider extends StatefulWidget {
 class _HomeCarousalSliderState extends State<HomeCarousalSlider> {
   final ValueNotifier<int> _currentSlider = ValueNotifier(0);
 
-  HomeSliderController homeSliderController = Get.find<HomeSliderController>();
-
-
-
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<HomeSliderController>(
-      builder: (controller) {
+    // HomeSliderController homeSliderController = Get.find<HomeSliderController>();
+    return Consumer<HomeSliderProvider>(
+      builder: (_,provider,_) {
         return Visibility(
-          visible: controller.isLoading == false,
+          visible: provider.isLoading == false,
           replacement:  LoadingWidget.forHomeCarouselShimmer(),
           child: Column(
             children: [
               CarouselSlider(
-                  items: homeSliderController.homeSliderList.map((i) {
+                  items: provider.homeSliderList.map((i) {
                     return Builder(
                       builder: (BuildContext context) {
-                        return GetBuilder<HomeSliderController>(
-                          builder: (controller) {
+                        return Consumer<HomeSliderProvider>(
+                          builder: (_,controller,_) {
                             return Container(
                               width: MediaQuery.of(context).size.width,
                               margin: EdgeInsets.symmetric(horizontal: 5.0),
@@ -67,7 +64,7 @@ class _HomeCarousalSliderState extends State<HomeCarousalSlider> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(homeSliderController.homeSliderList.length, (int index)=> index+1).map(( int  i){
+                children: List.generate(provider.homeSliderList.length, (int index)=> index+1).map(( int  i){
                   return ValueListenableBuilder(
                     valueListenable: _currentSlider,
                     builder: (context, int index, _) {

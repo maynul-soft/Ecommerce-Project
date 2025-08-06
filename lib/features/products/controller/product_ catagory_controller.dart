@@ -1,10 +1,11 @@
-import 'package:crafty_bay_ecommerce/app/urls.dart';
-import 'package:crafty_bay_ecommerce/core/service/network/network_client.dart';
+import 'package:crafty_bay_ecommerce/core/urls.dart';
+import 'package:crafty_bay_ecommerce/core/service/network_client.dart';
 import 'package:crafty_bay_ecommerce/features/products/data/model/category_model.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
-class ProductCategoryController extends GetxController {
+class ProductCategoryProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isInitialLoading = false;
   final int _count = 30;
@@ -26,24 +27,24 @@ class ProductCategoryController extends GetxController {
 
   List<CategoryModel> get categoryList => _categoryList;
 
-  Future<void> getCategoryList() async {
+  Future<void> getCategoryList(context) async {
     if (currentPage > 1) {
       _isLoading = true;
-      update();
+      notifyListeners();
     } else {
       _isInitialLoading = true;
-      update();
+      notifyListeners();
     }
 
     if (lastPage != null && lastPage! < currentPage) {
       _isLoading = false;
       _isInitialLoading = false;
-      update();
+      notifyListeners();
       return;
     }
     _currentPage++;
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).getRequest(
       url: Urls.productCategoryUrl(count: count, page: currentPage),
     );
 
@@ -69,10 +70,10 @@ class ProductCategoryController extends GetxController {
 
     if (currentPage > 1) {
       _isLoading = false;
-      update();
+      notifyListeners();
     } else {
       _isInitialLoading = false;
-      update();
+      notifyListeners();
     }
   }
 }

@@ -3,10 +3,9 @@ import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_wid
 import 'package:crafty_bay_ecommerce/features/products/controller/product_%20catagory_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list_by_category_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../../../common/ui/widgets/catagory_card.dart';
-import '../../controller/product_list_by_category_controller.dart';
 
 class ProductCategoryScreen extends StatefulWidget {
   const ProductCategoryScreen({super.key});
@@ -18,11 +17,8 @@ class ProductCategoryScreen extends StatefulWidget {
 }
 
 class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
-  MainBottomNavController mainBottomNavController =
-      Get.find<MainBottomNavController>();
 
-  final ProductCategoryController productCategoryController = Get.find<ProductCategoryController>();
-  final ProductListByCategoryController productListByCategoryController = ProductListByCategoryController();
+
 
   final ScrollController _scrollController = ScrollController();
 
@@ -34,16 +30,22 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
 
   void _loadMoreData (){
     if(_scrollController.position.extentAfter <200){
-      productCategoryController.getCategoryList();
+     Provider.of<ProductCategoryProvider>(context).getCategoryList(context);
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+
+    MainBottomNavProvider mainBottomNavProvider =
+    Provider.of<MainBottomNavProvider>(context);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, __) {
-        mainBottomNavController.backToHomeScreen();
+        mainBottomNavProvider.backToHomeScreen();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -53,8 +55,8 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
             icon: Icon(Icons.arrow_back_ios),
           ),
         ),
-        body: GetBuilder<ProductCategoryController>(
-          builder: (categoryController) {
+        body: Consumer<ProductCategoryProvider>(
+          builder: (_,categoryController,_) {
             return Column(
               children: [
                 Expanded(
@@ -92,6 +94,6 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
   }
 
   _onTapBackButton() {
-    mainBottomNavController.backToHomeScreen();
+    Provider.of<MainBottomNavProvider>(context, listen: false).backToHomeScreen();
   }
 }

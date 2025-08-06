@@ -1,4 +1,4 @@
-import 'package:crafty_bay_ecommerce/app/app_colors.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_colors.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/home_carousel_shimmer.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/product_card_shimmer.dart';
 import 'package:flutter/material.dart';

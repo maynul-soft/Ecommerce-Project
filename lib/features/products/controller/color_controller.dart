@@ -1,14 +1,12 @@
+import 'package:flutter/cupertino.dart';
 
-import 'package:get/get.dart';
 
-class ColorController extends GetxController {
-
-  static final controller =  Get.find<ColorController>();
+class ColorProvider extends ChangeNotifier {
 
   int currentIndex = 0;
 
   changeIndex(index){
     currentIndex = index;
-    update();
+   notifyListeners();
   }
 }

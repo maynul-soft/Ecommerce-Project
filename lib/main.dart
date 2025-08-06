@@ -1,6 +1,8 @@
 import 'dart:ui';
+import 'package:crafty_bay_ecommerce/app/providers.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'app/app.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,5 +26,5 @@ void main() async{
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
-  runApp(CraftyBay());
+  runApp(MultiProvider(providers: Providers.providers, child: CraftyBay()));
 }

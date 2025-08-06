@@ -1,9 +1,9 @@
-import 'package:crafty_bay_ecommerce/app/app_colors.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_colors.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/create_review_controller.dart';
 import 'package:crafty_bay_ecommerce/features/products/controller/product_review_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class CreateReviewScreen extends StatefulWidget {
   const CreateReviewScreen({super.key, required this.id});
@@ -18,12 +18,13 @@ class CreateReviewScreen extends StatefulWidget {
 class _CreateReviewScreenState extends State<CreateReviewScreen> {
   final TextEditingController _reviewTeController = TextEditingController();
   final GlobalKey<FormState> _formKey  = GlobalKey<FormState>();
-  final CreateReviewController controller =Get.find<CreateReviewController>();
 
 
 
   @override
   Widget build(BuildContext context) {
+    final CreateReviewProvider provider = Provider.of<CreateReviewProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -44,8 +45,8 @@ class _CreateReviewScreenState extends State<CreateReviewScreen> {
           child: Column(
             children: [
               SizedBox(height: 50),
-              GetBuilder<CreateReviewController>(
-                builder: (controller) {
+              Consumer<CreateReviewProvider>(
+                builder: (_,controller,_) {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: List.generate(5, (i){return GestureDetector(onTap: ()=> controller.ratingHandler(i), child: Icon(Icons.star,size: 50,color: controller.selectedIndex >= i ?AppColors.themColor:Colors.black45 ,));}).map((e)=> e).toList(),
@@ -70,7 +71,7 @@ class _CreateReviewScreenState extends State<CreateReviewScreen> {
               ElevatedButton(
                 onPressed:()=> _onTapSubmitReview(),
                 child: Visibility(
-                  visible: controller.isLoading == false,
+                  visible: provider.isLoading == false,
                   replacement:  LoadingWidget.forButton(),
                   child: Text(
                     'Submit',
@@ -87,7 +88,7 @@ class _CreateReviewScreenState extends State<CreateReviewScreen> {
 
   _onTapSubmitReview()async{
 
-    int rating = controller.rating;
+    int rating = context.read<CreateReviewProvider>().rating;
 
     Map<String,dynamic> body = {
       "product": widget.id,
@@ -96,11 +97,14 @@ class _CreateReviewScreenState extends State<CreateReviewScreen> {
     };
 
     if(_formKey.currentState!.validate()){
-      bool isSuccess = await  controller.createReview(body);
+      bool isSuccess = await  context.read<CreateReviewProvider>().createReview(context, body);
 
       if(isSuccess){
         _reviewTeController.clear();
-        Get.snackbar('Thank you', 'your opinion is more valuable for us');
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:  Text('Thank you your opinion is more valuable for us'),
+            )
+        );
       }
     }
 

@@ -1,7 +1,8 @@
+
 import 'package:crafty_bay_ecommerce/features/products/controller/product_details_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../../../app/app_colors.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../controller/prodct_quantity_controller.dart';
 
 class ProductNameAndQuantitySection extends StatelessWidget {
@@ -10,8 +11,8 @@ class ProductNameAndQuantitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ProductDetailsController>(
-      builder: (controller) {
+    return Consumer<ProductDetailsProvider>(
+      builder: (_,controller,_) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,9 +23,9 @@ class ProductNameAndQuantitySection extends StatelessWidget {
                 style: TextStyle(overflow: TextOverflow.visible, ),
               ),
             ),
-            GetBuilder<ProductQuantityController>(
-                builder: (context) {
-                  return increaseDecreaseSection();
+            Consumer<ProductQuantityProvider>(
+                builder: (context, provider, child) {
+                  return increaseDecreaseSection(context);
                 }
             ),
           ],
@@ -33,21 +34,26 @@ class ProductNameAndQuantitySection extends StatelessWidget {
     );
   }
 
-  Widget increaseDecreaseSection() {
+  Widget increaseDecreaseSection(BuildContext context) {
     return Row(
               children: [
                 IconButton(
-                  onPressed: dicreaseQuantity,
+                  onPressed: (){if(context.read<ProductQuantityProvider>().quantity>1){
+                    context.read<ProductQuantityProvider>().dicreaseQuantity();
+                  }},
                   icon: Icon(
                       Icons.indeterminate_check_box,
                       color:AppColors.themColor
                   ),
                 ),
                 Text(
-                  '${ProductQuantityController.Controller.quantity}',
+                  '${context.watch<ProductQuantityProvider>().quantity}'
+                  // '${ProductQuantityController.Controller.quantity}',
                 ),
                 IconButton(
-                  onPressed: increaseQuantity,
+                  onPressed: (){if(context.read<ProductQuantityProvider>().quantity<20){
+                    context.read<ProductQuantityProvider>().increaseQuantity();
+                  }},
                   icon: Icon(Icons.add_box,color: buttonColor(),),
                 ),
               ],
@@ -58,13 +64,4 @@ class ProductNameAndQuantitySection extends StatelessWidget {
     return AppColors.themColor;
   }
 
-  increaseQuantity() {
-    if(ProductQuantityController.Controller.quantity>19) return;
-    ProductQuantityController.Controller.increaseQuantity();
-  }
-
-  dicreaseQuantity() {
-    if(ProductQuantityController.Controller.quantity<2) return;
-    ProductQuantityController.Controller.dicreaseQuantity();
-  }
 }

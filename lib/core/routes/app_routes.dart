@@ -12,8 +12,8 @@ import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list_b
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list_screen.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/review_screen.dart';
 import 'package:flutter/material.dart';
-import '../features/auth/ui/screens/splash_screen.dart';
-import '../features/home/ui/screens/home_screen.dart';
+import '../../features/auth/ui/screens/splash_screen.dart';
+import '../../features/home/ui/screens/home_screen.dart';
 
 class AppRoutes{
   static Route<dynamic> routes (RouteSettings setting) {

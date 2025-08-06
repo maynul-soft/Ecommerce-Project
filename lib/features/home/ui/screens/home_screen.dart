@@ -1,4 +1,4 @@
-import 'package:crafty_bay_ecommerce/app/assets_path.dart';
+import 'package:crafty_bay_ecommerce/core/constants/assets_path.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/main_bottom_nav_controller.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:crafty_bay_ecommerce/features/home/ui/widgets/home_carousal_slider.dart';
@@ -10,7 +10,7 @@ import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list_b
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/product_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../../../common/ui/widgets/catagory_card.dart';
 import '../../../common/ui/widgets/product_card.dart';
 import '../widgets/app_bar_action_button.dart';
@@ -27,11 +27,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  MainBottomNavController mainBottomNavController =
-      Get.find<MainBottomNavController>();
+
 
   @override
   Widget build(BuildContext context) {
+    MainBottomNavProvider mainBottomNavProvider = Provider.of<MainBottomNavProvider>(context);
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -70,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildCategorySection() {
-    return GetBuilder<ProductCategoryController>(
-      builder: (categoryController) {
+    return Consumer<ProductCategoryProvider>(
+      builder: (_, categoryController,_) {
         return Visibility(
           visible:
               categoryController.isLoading == false &&
@@ -124,8 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget getPopularProduct() {
-    return GetBuilder<PopularProductController>(
-      builder: (controller) {
+    return Consumer<PopularProductProvider>(
+      builder: (_,controller,_) {
         return Visibility(
           visible: controller.isLoading == false,
           replacement: LoadingWidget.forProductCardShimmerHorizontalAxis(),
@@ -152,8 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget getSpecialProduct() {
-    return GetBuilder<SpecialProductController>(
-      builder: (controller) {
+    return Consumer<SpecialProductProvider>(
+      builder: (_,controller,_) {
         return Visibility(
           visible: controller.isLoading == false,
           replacement: LoadingWidget.forProductCardShimmerHorizontalAxis(),
@@ -180,8 +180,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget getNewProduct() {
-    return GetBuilder<NewProductController>(
-      builder: (controller) {
+    return Consumer<NewProductProvider>(
+      builder: (_,controller,_) {
         return Visibility(
           visible:  controller.isLoading == false,
           replacement:  LoadingWidget.forProductCardShimmerHorizontalAxis(),
@@ -207,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
   _onTapToSeeAllCategories() {
-    mainBottomNavController.gotoCategoryScreen();
+    Provider.of<MainBottomNavProvider>(context, listen:  false).gotoCategoryScreen();
   }
   _onTapToSeeAllPopularProduct(){
     Navigator.pushNamed(context, ProductListScreen.name, arguments: 'Popular');

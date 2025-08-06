@@ -1,10 +1,10 @@
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 
-class CurrentSlideIndicatorController extends GetxController {
+class CurrentSlideIndicatorProvider extends ChangeNotifier {
   int currentIndex = 0  ;
 
   changeIndicator(index){
     currentIndex = index;
-    update();
+    notifyListeners();
   }
 }

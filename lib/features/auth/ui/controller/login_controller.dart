@@ -1,32 +1,33 @@
 import 'package:crafty_bay_ecommerce/app/app.dart';
-import 'package:crafty_bay_ecommerce/app/urls.dart';
-import 'package:crafty_bay_ecommerce/core/service/network/network_client.dart';
+import 'package:crafty_bay_ecommerce/core/urls.dart';
+import 'package:crafty_bay_ecommerce/core/service/network_client.dart';
 import 'package:crafty_bay_ecommerce/features/auth/data/models/login_model.dart';
-import 'package:crafty_bay_ecommerce/features/auth/ui/controller/auth_controller.dart';
+import 'package:crafty_bay_ecommerce/features/auth/ui/controller/authProvider.dart';
 import 'package:crafty_bay_ecommerce/features/common/ui/screens/main_bottom_nav_screen.dart';
-import 'package:crafty_bay_ecommerce/features/home/ui/screens/home_screen.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
-class LoginController extends GetxController{
+class LoginProvider extends ChangeNotifier{
   bool isLoading = false ;
 
-  Future<void>login ({required String email, required String password} )async{
+  Future<void>login (context,{required String email, required String password} )async{
     isLoading = true;
-    update();
+    notifyListeners();
 
     final String url = Urls.loginUrls;
     Map<String, dynamic> requestBody = {
       "email": email,
       "password": password
     };
-    NetworkResponse response = await Get.find<NetworkClient>().postRequest(url: url, body: requestBody);
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).postRequest(url: url, body: requestBody);
 
     if(response.statusCode == 200 || response.statusCode == 201){
       LoginModel information = LoginModel.fromJson(response.responseBody!);
 
-     await AuthController.saveUserInformation(userToken: information.userData.token, user: information.userData.user.toJson());
-     await AuthController.getUserInformation();
+     await AuthProvider.saveUserInformation(userToken: information.userData.token, user: information.userData.user.toJson());
+     await AuthProvider.getUserInformation();
 
 
       Logger().i('''
@@ -37,11 +38,15 @@ class LoginController extends GetxController{
 
       navigatorKey.currentState?.pushNamedAndRemoveUntil(MainBottomNavScreen.name, (predicate)=>false);
     }else {
-      Get.snackbar('Sorry', response.errorMessage!);
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content:  Text('Sorry..! ${response.errorMessage!}'),
+      //     )
+      // );
+
     }
 
     isLoading = false;
-    update();
+    notifyListeners();
   }
 
 }

@@ -1,32 +1,33 @@
-import 'package:crafty_bay_ecommerce/app/urls.dart';
-import 'package:crafty_bay_ecommerce/core/service/network/network_client.dart';
+import 'package:crafty_bay_ecommerce/core/urls.dart';
+import 'package:crafty_bay_ecommerce/core/service/network_client.dart';
 import 'package:crafty_bay_ecommerce/features/products/data/model/product_model.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
-class ProductDetailsController extends GetxController {
+class ProductDetailsProvider extends ChangeNotifier {
   bool isLoading = false;
 
   ProductModel? productData;
 
-  Future<void> getProduct(id) async {
+  Future<void> getProduct(context, id) async {
     isLoading = true;
-    update();
+    notifyListeners();
 
     productData = null;
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).getRequest(
       url: Urls.productDetailsUrl(id: id),
     );
 
     if(response.statusCode == 200 || response.statusCode == 201){
       productData = ProductModel.fromJson(response.responseBody!['data']);
-      update();
+      notifyListeners();
 
       Logger().t(productData!.sizes);
     }
 
     isLoading = false;
-    update();
+    notifyListeners();
   }
 }

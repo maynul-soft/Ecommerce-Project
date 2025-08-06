@@ -1,18 +1,19 @@
-import 'package:crafty_bay_ecommerce/app/urls.dart';
-import 'package:crafty_bay_ecommerce/core/service/network/network_client.dart';
+import 'package:crafty_bay_ecommerce/core/urls.dart';
+import 'package:crafty_bay_ecommerce/core/service/network_client.dart';
 import 'package:crafty_bay_ecommerce/features/products/data/model/product_review_model.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
-class ProductReviewController extends GetxController{
+class ProductReviewProvider extends ChangeNotifier{
   bool isLoading = false;
 
   List<ProductReviewModel> reviewList= [];
 
-  Future<void> getReview({required String id})async{
+  Future<void> getReview(context, {required String id})async{
     isLoading = true;
-    update();
+    notifyListeners();
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(url: Urls.productReviewUrl(id: id,));
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).getRequest(url: Urls.productReviewUrl(id: id,));
 
     if (response.statusCode == 200 || response.statusCode == 201){
       List<ProductReviewModel> tempList = [];
@@ -23,12 +24,12 @@ class ProductReviewController extends GetxController{
           tempList.add(ProductReviewModel.fromJson(item));
         }
         reviewList = tempList;
-        update();
+        notifyListeners();
       }
 
     }
     isLoading = false;
-    update();
+    notifyListeners();
   }
 
 

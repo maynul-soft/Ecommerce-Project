@@ -1,11 +1,16 @@
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
-
-import '../../../app/urls.dart';
-import '../../../core/service/network/network_client.dart';
+import 'package:provider/provider.dart';
+import '../../../core/urls.dart';
+import '../../../core/service/network_client.dart';
 import '../ui/data/model/wish_list_model.dart';
 
-class WishListController extends GetxController {
+class WishListProvider extends ChangeNotifier {
+
+  final NetworkClient networkClient;
+
+  WishListProvider({required this.networkClient});
+
   bool _isLoading = false;
   bool _isInitialLoading = false;
   final int _count = 30;
@@ -28,25 +33,25 @@ class WishListController extends GetxController {
 
   List<WishListProductCardModel> get wishList => _wishList;
 
-  Future<void> getWishListProduct() async {
+  Future<void> getWishListProduct(context) async {
     if (currentPage > 1) {
       _isLoading = true;
-      update();
+      notifyListeners();
     } else {
       wishList.clear();
       _isInitialLoading = true;
-      update();
+      notifyListeners();
     }
 
     if (lastPage != null && lastPage! < currentPage) {
       _isLoading = false;
       _isInitialLoading = false;
-      update();
+      notifyListeners();
       return;
     }
     _currentPage++;
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(
+    NetworkResponse response = await  networkClient.getRequest(
       url: Urls.wishListUrl,
     );
 
@@ -69,6 +74,6 @@ class WishListController extends GetxController {
     }
       _isLoading = false;
       _isInitialLoading = false;
-      update();
+      notifyListeners();
   }
 }

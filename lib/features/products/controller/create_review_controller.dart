@@ -1,26 +1,27 @@
-import 'package:crafty_bay_ecommerce/app/urls.dart';
-import 'package:crafty_bay_ecommerce/core/service/network/network_client.dart';
-import 'package:get/get.dart';
+import 'package:crafty_bay_ecommerce/core/urls.dart';
+import 'package:crafty_bay_ecommerce/core/service/network_client.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
-class CreateReviewController extends GetxController{
+class CreateReviewProvider extends ChangeNotifier{
   bool isLoading = false;
   int rating = 0;
   int selectedIndex = 0;
 
-  Future<bool> createReview(Map<String,dynamic> body)async{
+  Future<bool> createReview(context, Map<String,dynamic> body)async{
     isLoading = true;
-    update();
+    notifyListeners();
     
-    NetworkResponse response = await Get.find<NetworkClient>().postRequest(url: Urls.createReviewUrl, body: body);
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).postRequest(url: Urls.createReviewUrl, body: body);
 
     if(response.statusCode == 200 || response.statusCode == 201){
       isLoading = false;
       selectedIndex = 0;
-      update();
+      notifyListeners();
       return true;
     }else{
       isLoading = false;
-      update();
+      notifyListeners();
       return false;
     }
   }
@@ -28,6 +29,6 @@ class CreateReviewController extends GetxController{
   ratingHandler(index){
     rating = index+1;
     selectedIndex = index;
-    update();
+    notifyListeners();
   }
 }

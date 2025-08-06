@@ -1,21 +1,22 @@
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
-import '../../../app/urls.dart';
-import '../../../core/service/network/network_client.dart';
+import 'package:provider/provider.dart';
+import '../../../core/urls.dart';
+import '../../../core/service/network_client.dart';
 import '../data/model/product_card_model.dart';
 
-class SpecialProductController extends GetxController {
+class SpecialProductProvider extends ChangeNotifier {
   bool isLoading = false;
   List<ProductCardModel> specialProductList = [];
   List<ProductCardModel> productList = [];
 
   final Logger _logger = Logger();
 
-  Future<void> getSpecialProduct() async {
+  Future<void> getSpecialProduct(context) async {
     isLoading = true;
-    update();
+    notifyListeners();
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).getRequest(
       url: Urls.productByTagUrl(tag: 'Special'),
     );
 
@@ -50,11 +51,11 @@ class SpecialProductController extends GetxController {
         tempList.length > 8 ? 8 : tempList.length,
       );
       productList = tempList;
-      update();
+      notifyListeners();
 
       _logger.w("this is product list $tempList");
     }
     isLoading = false;
-    update();
+    notifyListeners();
   }
 }

@@ -1,10 +1,11 @@
-import 'package:crafty_bay_ecommerce/app/urls.dart';
-import 'package:crafty_bay_ecommerce/core/service/network/network_client.dart';
+import 'package:crafty_bay_ecommerce/core/urls.dart';
+import 'package:crafty_bay_ecommerce/core/service/network_client.dart';
 import 'package:crafty_bay_ecommerce/features/cert/data/model/cart_checkout_model.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
-class GetCartProductController extends GetxController {
+class GetCartProductProvider extends ChangeNotifier {
   bool isLoading = false;
   int totalPrice = 0;
   int deliveryCharge = 20;
@@ -13,11 +14,11 @@ class GetCartProductController extends GetxController {
 
   List<CartCheckoutModel> cartProductList = [];
 
-  Future<void> getCartProduct() async {
+  Future<void> getCartProduct(context) async {
     isLoading = true;
-    update();
+    notifyListeners();
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(
+    NetworkResponse response = await  Provider.of<NetworkClient>(context, listen: false).getRequest(
       url: Urls.getCartItemUrl,
     );
 
@@ -31,27 +32,27 @@ class GetCartProductController extends GetxController {
       }
       cartProductList = tempList;
       countTotalPrice();
-      update();
+      notifyListeners();
     }
 
     isLoading = false;
-    update();
+    notifyListeners();
   }
 
-  increaseQuantityFromQty(int index) {
+  increaseQuantityFromQty(context, int index) {
     if (cartProductList[index].quantity >= 20) return;
     cartProductList[index].quantity++;
     countTotalPrice();
-    update();
-    updateCart(index);
+    notifyListeners();
+    updateCart(context, index);
   }
 
-  dicreaseQuantityFromQty(int index) {
+  dicreaseQuantityFromQty(context, int index) {
     if (cartProductList[index].quantity <= 1) return;
     cartProductList[index].quantity--;
     countTotalPrice();
-    update();
-    updateCart(index);
+    notifyListeners();
+    updateCart(context, index);
   }
 
   countTotalPrice() {
@@ -62,27 +63,27 @@ class GetCartProductController extends GetxController {
 
     tax = (totalPrice*5)~/100;
     finalCheckoutPrice();
-    update();
+    notifyListeners();
   }
 
-  Future<void> updateCart(index) async {
+  Future<void> updateCart(context, index) async {
     String id = cartProductList[index].cartItemId;
     Map<String, dynamic> body = {"quantity": cartProductList[index].quantity};
-    NetworkResponse response = await Get.find<NetworkClient>().patchRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).patchRequest(
       url: Urls.updateCartItemUrl(id: id ),
       body: body,
     );
     Logger().i(response.responseBody);
   }
-  Future<void> deleteCartItem(index) async {
+  Future<void> deleteCartItem(context, index) async {
     String id = cartProductList[index].cartItemId;
-    NetworkResponse response = await Get.find<NetworkClient>().deleteRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context,listen:  false).deleteRequest(
       url: Urls.deleteItemUrl(id: id),
     );
     cartProductList.removeAt(index);
     if(response.statusCode == 200 || response.statusCode == 201){
       countTotalPrice();
-      updateCart(index);
+      updateCart(context ,index);
 
     }
     Logger().i('code==> ${ response.statusCode} body==> ${response.responseBody} error=>> ${response.errorMessage}');

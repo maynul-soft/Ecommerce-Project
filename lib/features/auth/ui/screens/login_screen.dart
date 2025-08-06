@@ -1,11 +1,10 @@
-import 'package:crafty_bay_ecommerce/app/app_colors.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_colors.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/controller/login_controller.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/register_screen.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
+import 'package:provider/provider.dart';
 import '../widgets/logo_header.dart';
 import '../widgets/validator.dart';
 
@@ -67,14 +66,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(hintText: 'Password'),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(onPressed: _onTapLogIn, child: GetBuilder<LoginController>(
-                    builder: (controller) {
-                      return Visibility(
-                          visible: controller.isLoading == false,
+                  ElevatedButton(
+                    onPressed: _onTapLogIn,
+                    child: Consumer<LoginProvider>(
+                      builder: (_,provider,_) {
+                        return Visibility(
+                          visible: provider.isLoading == false,
                           replacement: LoadingWidget.forButton(),
-                          child: Text('Login'));
-                    }
-                  )),
+                          child: Text('Login'),
+                        );
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 50),
 
                   RichText(
@@ -84,11 +87,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         TextSpan(
                           text: 'Sign up',
-                          style: TextStyle(color: AppColors.themColor,decoration: TextDecoration.underline),
-                          recognizer: TapGestureRecognizer()..onTap=(){
-                            Navigator.pushNamed(context, RegisterScreen.name);
-                          }
-
+                          style: TextStyle(
+                            color: AppColors.themColor,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer:
+                              TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RegisterScreen.name,
+                                  );
+                                },
                         ),
                       ],
                     ),
@@ -103,12 +113,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _onTapLogIn() async {
-   if( _formKey.currentState!.validate()){
-    await Get.find<LoginController>().login(
-         email: _emailTEController.text.trim(),
-         password: _passwordTeController.text
-     );
-   }
-
+    if (_formKey.currentState!.validate()) {
+      await context.read<LoginProvider>().login(
+        context,
+        email: _emailTEController.text.trim(),
+        password: _passwordTeController.text,
+      );
+    }
   }
 }

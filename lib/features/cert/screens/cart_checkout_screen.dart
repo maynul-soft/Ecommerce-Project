@@ -1,10 +1,10 @@
-import 'package:crafty_bay_ecommerce/app/app_colors.dart';
-import 'package:crafty_bay_ecommerce/app/assets_path.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_colors.dart';
+import 'package:crafty_bay_ecommerce/core/constants/assets_path.dart';
 import 'package:crafty_bay_ecommerce/features/cert/controller/get_cart_product_controller.dart';
 import 'package:crafty_bay_ecommerce/features/checkout/ui/screens/place_order_screen.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../../auth/ui/controller/main_bottom_nav_controller.dart';
 import '../../products/controller/prodct_quantity_controller.dart';
 
@@ -18,29 +18,32 @@ class CartCheckOutScreen extends StatefulWidget {
 class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
   static final String name = 'cart-screen';
 
-  MainBottomNavController mainBottomNavController =
-      Get.find<MainBottomNavController>();
-  ProductQuantityController productQuantityController =
-      Get.find<ProductQuantityController>();
-  GetCartProductController getCartProductController =
-      Get.find<GetCartProductController>();
-
   @override
   void initState() {
     super.initState();
     fetchCartProduct();
   }
 
-  fetchCartProduct() async {
-    await Get.find<GetCartProductController>().getCartProduct();
+  fetchCartProduct()  {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+       Provider.of<GetCartProductProvider>(
+        context,
+        listen: false,
+      ).getCartProduct(context);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    MainBottomNavProvider mainBottomNavProvider =
+        Provider.of<MainBottomNavProvider>(context);
+    ProductQuantityProvider productQuantityController =
+        Provider.of<ProductQuantityProvider>(context);
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, __) {
-        mainBottomNavController.backToHomeScreen();
+        mainBottomNavProvider.backToHomeScreen();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -50,13 +53,13 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
           ),
           leading: IconButton(
             onPressed: () {
-              mainBottomNavController.backToHomeScreen();
+              mainBottomNavProvider.backToHomeScreen();
             },
             icon: Icon(Icons.arrow_back_ios_new),
           ),
         ),
-        body: GetBuilder<GetCartProductController>(
-          builder: (controller) {
+        body: Consumer<GetCartProductProvider>(
+          builder: (context, controller, child) {
             return Visibility(
               visible: controller.isLoading == false,
               replacement: Center(child: LoadingWidget.forScreen()),
@@ -143,7 +146,13 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
                                               ),
                                             ],
                                           ),
-                                          IconButton(onPressed:()=> onPressedDeleteCartItem(index), icon: Icon(Icons.delete)),
+                                          IconButton(
+                                            onPressed:
+                                                () => onPressedDeleteCartItem(
+                                                  index,
+                                                ),
+                                            icon: Icon(Icons.delete),
+                                          ),
                                         ],
                                       ),
 
@@ -159,8 +168,12 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
                                               ),
                                             ),
                                           ),
-                                          GetBuilder<ProductQuantityController>(
-                                            builder: (controller) {
+                                          Consumer<ProductQuantityProvider>(
+                                            builder: (
+                                              context,
+                                              controller,
+                                              child,
+                                            ) {
                                               return increaseDecreaseSection(
                                                 index,
                                               );
@@ -208,8 +221,8 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Total price', style: TextStyle(fontSize: 13)),
-              GetBuilder<GetCartProductController>(
-                builder: (controller) {
+              Consumer<GetCartProductProvider>(
+                builder: (_, controller, _) {
                   return Text(
                     '৳${controller.totalPrice}',
                     style: TextStyle(fontSize: 25, color: AppColors.themColor),
@@ -220,9 +233,12 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
           ),
           SizedBox(
             width: 120,
-            child: ElevatedButton(onPressed: () {
-              Navigator.pushNamed(context, PlaceOrderScreen.name);
-            }, child: Text('Checkout')),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, PlaceOrderScreen.name);
+              },
+              child: Text('Checkout'),
+            ),
           ),
         ],
       ),
@@ -230,13 +246,13 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
   }
 
   Widget increaseDecreaseSection(int index) {
-    return GetBuilder<GetCartProductController>(
-      builder: (controller) {
+    return Consumer<GetCartProductProvider>(
+      builder: (_, controller, _) {
         return Row(
           children: [
             IconButton(
               onPressed: () {
-                controller.dicreaseQuantityFromQty(index);
+                controller.dicreaseQuantityFromQty(context, index);
               },
               icon: Icon(
                 Icons.indeterminate_check_box,
@@ -244,11 +260,11 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
               ),
             ),
             Text(
-              '${Get.find<GetCartProductController>().cartProductList[index].quantity}',
+              '${context.read<GetCartProductProvider>().cartProductList[index].quantity}',
             ),
             IconButton(
               onPressed: () {
-                controller.increaseQuantityFromQty(index);
+                controller.increaseQuantityFromQty(context, index);
               },
               icon: Icon(Icons.add_box, color: AppColors.themColor),
             ),
@@ -258,7 +274,7 @@ class _CartCheckOutScreenState extends State<CartCheckOutScreen> {
     );
   }
 
-  onPressedDeleteCartItem(index){
-    Get.find<GetCartProductController>().deleteCartItem(index);
+  onPressedDeleteCartItem(index) {
+    context.read().deleteCartItem(index);
   }
 }

@@ -3,7 +3,7 @@ import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_wid
 import 'package:crafty_bay_ecommerce/features/common/ui/widgets/product_card.dart';
 import 'package:crafty_bay_ecommerce/features/wish_list/controller/wish_list_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class WishListScreen extends StatefulWidget {
   const WishListScreen({super.key,});
@@ -17,7 +17,7 @@ class WishListScreen extends StatefulWidget {
 class _WishListScreenState extends State<WishListScreen> {
 
   final ScrollController _controller = ScrollController();
-  WishListController wishListController = Get.find<WishListController>();
+
 
   @override
   void initState() {
@@ -28,13 +28,15 @@ class _WishListScreenState extends State<WishListScreen> {
 
   fetchProduct() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      wishListController.getWishListProduct();
+      Provider.of<WishListProvider>(context, listen: false).getWishListProduct(context);
     });
   }
 
   loadMoreData() {
-    if (_controller.position.extentAfter < 50 || wishListController.totalItem! >= wishListController.wishList.length){
-      wishListController.getWishListProduct();
+    final provider = Provider.of<WishListProvider>(context, listen: false);
+
+    if (_controller.position.extentAfter < 50 || provider.totalItem! >= provider.wishList.length){
+      provider.getWishListProduct(context);
     }
   }
 
@@ -57,8 +59,8 @@ class _WishListScreenState extends State<WishListScreen> {
                 .headlineSmall,
           ),
         ),
-        body: GetBuilder<WishListController>(
-            builder: (controller) {
+        body: Consumer<WishListProvider>(
+            builder: (_,controller,_) {
               return Visibility(
                 visible: controller.isInitialLoading == false,
                 replacement: Center(child: LoadingWidget.forScreen()),
@@ -97,6 +99,6 @@ class _WishListScreenState extends State<WishListScreen> {
   }
 
   _backToHome() {
-    Get.find<MainBottomNavController>().backToHomeScreen();
+    Provider.of<MainBottomNavProvider>(context).backToHomeScreen();
   }
 }

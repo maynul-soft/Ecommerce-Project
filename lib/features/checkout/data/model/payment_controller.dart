@@ -9,15 +9,16 @@ import 'package:flutter_sslcommerz/model/SSLCSdkType.dart';
 import 'package:flutter_sslcommerz/model/SSLCommerzInitialization.dart';
 import 'package:flutter_sslcommerz/model/SSLCurrencyType.dart';
 import 'package:flutter_sslcommerz/sslcommerz.dart';
-import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
-class PaymentController extends GetxController {
+class PaymentProvider extends ChangeNotifier {
 
 
-  Future<void> makePayment(Map<String,dynamic>body) async {
+  Future<void> makePayment(Map<String,dynamic>body, context) async {
     double totalAmount =
-        Get.find<GetCartProductController>().checkoutPrice?.toDouble() ?? 0.00;
+        Provider.of<GetCartProductProvider>(context, listen:  false).checkoutPrice?.toDouble()?? 0.00;
+
     final storeId = Env.sslStoreId;
     final storePass = Env.sslStorePassword;
     final transectionId = generateTxId();
@@ -47,32 +48,47 @@ class PaymentController extends GetxController {
 
     switch (response.status) {
       case 'FAILED':
-        Get.snackbar('Failed', "Payment failed");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content:  Text('Failed Payment failed'),
+        //     )
+        // );
         Navigator.pop(navigatorKey.currentContext!);
         break;
 
       case 'CANCELLED':
-        Get.snackbar('Failed', "Payment canceled by user");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content:  Text('Payment canceled by user'),
+        //     )
+        // );
         Navigator.pop(navigatorKey.currentContext!);
         break;
 
       case 'UNATTEMPTED':
-        Get.snackbar('Failed', "Payment unattempted");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content:  Text('Payment unattempted'),
+        //     )
+        // );
         Navigator.pop(navigatorKey.currentContext!);
         break;
 
       case 'EXPIRED':
-        Get.snackbar('Failed', "Payment expired");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content:  Text('Payment expired'),
+        //     )
+        // );
         Navigator.pop(navigatorKey.currentContext!);
         break;
 
       case 'ERROR':
-        Get.snackbar('Failed', "Something went wrong");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content:  Text('Something went wrong'),
+        //     )
+        // );
         Navigator.pop(navigatorKey.currentContext!);
         break;
 
       case 'VALID':
-        Get.find<PlaceOrderController>().placeOrder(body);
+        context.read<PlaceOrderProvider>().placeOrder(body);
         break;
     }
   }

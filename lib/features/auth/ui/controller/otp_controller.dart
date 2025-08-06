@@ -1,19 +1,21 @@
 import 'dart:async';
 import 'package:crafty_bay_ecommerce/app/app.dart';
-import 'package:crafty_bay_ecommerce/app/urls.dart';
-import 'package:crafty_bay_ecommerce/core/service/network/network_client.dart';
+import 'package:crafty_bay_ecommerce/core/urls.dart';
+import 'package:crafty_bay_ecommerce/core/service/network_client.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/login_screen.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class OtpController extends GetxController {
+class OtpProvider extends ChangeNotifier {
   bool isLoading = false;
   int otpValidity = 10;
 
   String? userEmail;
 
-  Future<void> verifyOtp({required String email, required String otp}) async {
+  Future<void> verifyOtp(context,{required String email, required String otp}) async {
     isLoading = true;
-    update();
+    notifyListeners();
 
     userEmail = email;
 
@@ -24,59 +26,76 @@ class OtpController extends GetxController {
 
     String url = Urls.verifyOtpUrl;
 
-    NetworkResponse response = await Get.find<NetworkClient>().postRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).postRequest(
       url: url,
       body: responseBody,
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Get.snackbar('Welcome..!', "Successfully verified email address");
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content:  Text("Welcome..! Successfully verified email address"),
+          )
+      );
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         LoginScreen.name,
         (predicate) => false,
       );
     } else {
-      Get.snackbar('Sorry..!', response.errorMessage!);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content:  Text("Welcome..! ${response.errorMessage!}"),
+          )
+      );
+
     }
     isLoading = false;
-    update();
+    notifyListeners();
   }
 
   countOtp() async {
     Timer.periodic(Duration(seconds: 1), (time) {
       if (otpValidity > 0) {
         otpValidity--;
-        update();
+        notifyListeners();
       } else {
         time.cancel();
-        update();
+        notifyListeners();
       }
     });
   }
 
-  resendOtp() {
+  resendOtp(context) {
     otpValidity = 120;
-    update();
+    notifyListeners();
     countOtp();
-    tryResendOtp();
+    tryResendOtp(context);
   }
 
-  Future<void> tryResendOtp() async {
+  Future<void> tryResendOtp(context) async {
     try {
       if (userEmail != null) {
-        NetworkResponse response = await Get.find<NetworkClient>().postRequest(
+        NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).postRequest(
           url: Urls.resendOtpUrl,
           body: {"email": userEmail},
         );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          Get.snackbar('Awesome', 'A 4 digit otp send on your email');
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(content:  Text('Awesome A 4 digit otp send on your email'),
+          //     )
+          // );
         } else {
-          Get.snackbar('Sorry', response.errorMessage!);
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(content:  Text('Sorry...! ${response.errorMessage}'),
+          //     )
+          // );
         }
       }
     } catch (e) {
-      Get.snackbar('Warning', e.toString());
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content:  Text('Warning! ${e.toString()}'),
+      //     )
+      // );
+
     }
   }
 }

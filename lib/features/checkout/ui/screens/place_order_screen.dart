@@ -1,7 +1,7 @@
 import 'package:crafty_bay_ecommerce/features/cert/controller/get_cart_product_controller.dart';
 import 'package:crafty_bay_ecommerce/features/checkout/data/model/payment_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 class PlaceOrderScreen extends StatefulWidget {
   const PlaceOrderScreen({super.key});
 
@@ -12,7 +12,6 @@ class PlaceOrderScreen extends StatefulWidget {
 }
 
 class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
-  final GetCartProductController _getCartProductController = Get.find<GetCartProductController>();
   final TextEditingController _fullNameTeController = TextEditingController();
   final TextEditingController _mobileNumberTeController = TextEditingController();
   final TextEditingController _addressTeController = TextEditingController();
@@ -26,6 +25,8 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    GetCartProductProvider getCartProductProvider = Provider.of<GetCartProductProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Checkout'),
@@ -123,24 +124,24 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total price:'),
-                      Text('${_getCartProductController.totalPrice}')
+                      Text('${getCartProductProvider.totalPrice}')
                     ],
                   ),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Delivery Fee:'),
-                      Text('${_getCartProductController.deliveryCharge}')
+                      Text('${getCartProductProvider.deliveryCharge}')
                     ],
                   ),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Tax :'),
-                      Text('${_getCartProductController.tax}')
+                      Text('${getCartProductProvider.tax}')
                     ],
                   ),Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Sub Total :'),
-                      Text('${_getCartProductController.checkoutPrice}')
+                      Text('${getCartProductProvider.checkoutPrice}')
                     ],
                   ),
 
@@ -186,7 +187,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   };
 
   if(_formKey.currentState!.validate()){
-    Get.find<PaymentController>().makePayment(body);
+    context.read<PaymentProvider>().makePayment(body,context);
   }
 
 

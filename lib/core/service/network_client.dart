@@ -12,13 +12,20 @@ class NetworkClient {
   Map<String, String> Function() commonHeader;
   final VoidCallback onSocketException;
 
+  // Map<String, String> header = {
+  //   "Content-Type": "application/json",
+  //   "token": '',
+  // };
+
   final Logger _logger = Logger();
 
-  NetworkClient({required this.onSocketException, required this.onUnAuthorize, required this.commonHeader});
+  NetworkClient({ required this.onSocketException, required  this.onUnAuthorize, required  this.commonHeader});
 
   Future<NetworkResponse> getRequest({required String url}) async {
 
     try {
+
+
       Uri uri = Uri.parse(url);
 
       _logger.i('''
@@ -26,9 +33,11 @@ class NetworkClient {
       ==> $url
       ''');
 
+
+
       Response response = await get(
         uri,
-        headers: commonHeader(),
+        headers: commonHeader()
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -168,7 +177,7 @@ class NetworkClient {
           responseBody: decodedJson,
         );
       } else if (response.statusCode == 401) {
-        onUnAuthorize();
+        // onUnAuthorize();
         return NetworkResponse(
           isSuccess: false,
           statusCode: response.statusCode,

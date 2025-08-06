@@ -1,19 +1,15 @@
-import 'package:crafty_bay_ecommerce/features/cert/controller/get_cart_product_controller.dart';
-import 'package:crafty_bay_ecommerce/features/cert/data/model/cart_checkout_model.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 
-class ProductQuantityController extends GetxController {
-
-  static final ProductQuantityController Controller = Get.find<ProductQuantityController>();
+class ProductQuantityProvider extends ChangeNotifier {
 
   int quantity = 1;
 
   increaseQuantity(){
     quantity++;
-    update();
+    notifyListeners();
   }
   dicreaseQuantity(){
     quantity--;
-    update();
+    notifyListeners();
   }
 }

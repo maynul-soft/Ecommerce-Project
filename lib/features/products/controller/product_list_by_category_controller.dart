@@ -1,11 +1,12 @@
 import 'package:crafty_bay_ecommerce/features/products/data/model/product_card_model.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
-import '../../../app/urls.dart';
-import '../../../core/service/network/network_client.dart';
+import '../../../core/urls.dart';
+import '../../../core/service/network_client.dart';
 
-class ProductListByCategoryController extends GetxController {
+class ProductListByCategoryProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isInitialLoading = false;
   final int _count = 30;
@@ -28,7 +29,7 @@ class ProductListByCategoryController extends GetxController {
 
   List<ProductCardModel> get productList => _productList;
 
-  Future<void> getProductList({required String categoryId}) async {
+  Future<void> getProductList(context, {required String categoryId}) async {
 
     _logger.w('currentPage Before sum=> $currentPage');
 
@@ -43,24 +44,23 @@ class ProductListByCategoryController extends GetxController {
     if (currentPage > 1) {
       _isLoading = true;
       _isInitialLoading = false;
-      update();
     } else {
       _isInitialLoading = true;
       _isLoading = false;
-      update();
     }
+    notifyListeners();
 
     if (lastPage != null && lastPage! <= currentPage) {
       _isLoading = false;
       _isInitialLoading = false;
-      update();
+      notifyListeners();
       return;
     }
     _currentPage++;
 
     _logger.w('After sum=> $currentPage');
 
-    NetworkResponse response = await Get.find<NetworkClient>().getRequest(
+    NetworkResponse response = await Provider.of<NetworkClient>(context, listen: false).getRequest(
       url: Urls.productListByCategory(
         count: count,
         page: currentPage,
@@ -99,7 +99,7 @@ class ProductListByCategoryController extends GetxController {
 
       _isLoading = false;
       _isInitialLoading = false;
-      update();
+      notifyListeners();
 
 
   }

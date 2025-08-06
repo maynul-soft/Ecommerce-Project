@@ -1,8 +1,8 @@
-import 'package:crafty_bay_ecommerce/app/app_colors.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_colors.dart';
 import 'package:crafty_bay_ecommerce/features/common/loading_widgets/loading_widget.dart';
 import 'package:crafty_bay_ecommerce/features/products/ui/screens/create_review_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import '../../controller/product_review_controller.dart';
 
 class ReviewScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   fetchData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Get.find<ProductReviewController>().getReview(id: widget.id);
+      Provider.of<ProductReviewProvider>(context, listen:  false).getReview(context,id: widget.id);
     });
   }
 
@@ -43,8 +43,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
         ),
         elevation: 10,
       ),
-      body: GetBuilder<ProductReviewController>(
-        builder: (controller) {
+      body: Consumer<ProductReviewProvider>(
+        builder: (_,controller,_) {
           return Visibility(
             visible:  controller.isLoading == false,
             replacement: Center(child:LoadingWidget.forScreen()),
@@ -106,10 +106,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
         child: ListView.separated(
           shrinkWrap: true,
           primary: false,
-          itemCount: Get.find<ProductReviewController>().reviewList.length,
+          itemCount: context.read<ProductReviewProvider>().reviewList.length,
           itemBuilder: ((BuildContext context, int index) {
-            return GetBuilder<ProductReviewController>(
-              builder: (controller) {
+            return Consumer<ProductReviewProvider>(
+              builder: (_,controller,_) {
                 return Card(
                   elevation: 5,
                   shape: RoundedRectangleBorder(

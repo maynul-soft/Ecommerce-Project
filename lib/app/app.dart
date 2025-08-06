@@ -1,9 +1,9 @@
-import 'package:crafty_bay_ecommerce/app/app_routes.dart';
-import 'package:crafty_bay_ecommerce/app/app_theme.dart';
-import 'package:crafty_bay_ecommerce/app/controller_binder.dart';
+import 'package:crafty_bay_ecommerce/app/providers.dart';
+import 'package:crafty_bay_ecommerce/core/routes/app_routes.dart';
+import 'package:crafty_bay_ecommerce/core/constants/app_theme.dart';
 import 'package:crafty_bay_ecommerce/features/auth/ui/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:provider/provider.dart';
 
 
 class CraftyBay extends StatefulWidget {
@@ -16,9 +16,8 @@ class CraftyBay extends StatefulWidget {
 class _CraftyBayState extends State<CraftyBay> {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
       navigatorKey: navigatorKey,
-      initialBinding: ControllerBinder(),
       theme: AppTheme.lightThemeData,
       initialRoute: SplashScreen.name,
       onGenerateRoute: AppRoutes.routes,

@@ -1,23 +1,22 @@
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 
-class ProductSizeController extends GetxController {
+class ProductSizeProvider extends ChangeNotifier {
 
-  static final ProductSizeController controller = Get.find<ProductSizeController>();
 
   String selectedSize = '';
   int? selectedIndex = 0;
   changeIndex(index){
     selectedIndex = index;
-    update();
+    notifyListeners();
   }
   setSize(size){
     selectedSize = size;
-    update();
+    notifyListeners();
   }
 
   unselectSize(){
     selectedIndex = null;
-    update();
+    notifyListeners();
   }
 
 
